@@ -1,3 +1,5 @@
+import sbt.internal.IvyConsole.Dependencies._
+
 name := "Final-Task"
 
 version := "0.1"
@@ -72,7 +74,10 @@ libraryDependencies ++= Seq(
   "org.http4s"               %% "http4s-json4s-native"          % http4sVersion,
   "org.tpolecat"             %% "doobie-postgres"               % doobieVersion,
   "org.flywaydb"              % "flyway-core"                   % "6.2.4",
-  "org.postgresql"            % "postgresql"                    % "42.2.6"
+  "org.postgresql"            % "postgresql"                    % "42.2.6",
+  "dev.profunktor"           %% "redis4cats-effects"            % "0.13.1",
+  "io.estatico"              %% "newtype"                       % "0.4.4",
+  "dev.profunktor"           %% "http4s-jwt-auth"               % "0.0.7"
 )
 
 libraryDependencies ++= Seq(
