@@ -1,4 +1,5 @@
 package com.portal.repository.impl.doobie.meta
+import com.portal.domain.auth.{Email, EncryptedPassword, UserId, UserName, UserRole}
 import com.portal.domain.category.CategoryId
 import com.portal.domain.money.Money
 import com.portal.domain.product.{ProductStatus, _}
@@ -10,7 +11,7 @@ import java.time.LocalDate
 import java.util.{Currency, UUID}
 
 object implicits {
-
+//Product
   implicit val productStatusMeta: Meta[ProductStatus] =
     Meta[String]
       .timap(s => ProductStatus.withNameInsensitive(snakeToCamel(s.toLowerCase)))(g => normalizedSnakeCase(g.toString))
@@ -37,6 +38,27 @@ object implicits {
   implicit val categoryIdMeta: Meta[CategoryId] =
     Meta[String]
       .timap(s => CategoryId(UUID.fromString(s)))(g => g.value.toString)
+  //////User
+
+  implicit val userIdMeta: Meta[UserId] =
+    Meta[UUID]
+      .timap(s => UserId(s))(g => g.value)
+
+  implicit val userNameMeta: Meta[UserName] =
+    Meta[String]
+      .timap(s => UserName(s))(g => g.value)
+
+  implicit val encryptedPasswordMeta: Meta[EncryptedPassword] =
+    Meta[String]
+      .timap(s => EncryptedPassword(s))(g => g.value)
+
+  implicit val emailMeta: Meta[Email] =
+    Meta[String]
+      .timap(s => Email(s))(g => g.value)
+
+  implicit val userRoleMeta: Meta[UserRole] =
+    Meta[String]
+      .timap(s => UserRole.withNameInsensitive(snakeToCamel(s.toLowerCase)))(g => normalizedSnakeCase(g.toString))
 
   def snakeToCamel(name: String): String =
     "_([a-z\\d])".r

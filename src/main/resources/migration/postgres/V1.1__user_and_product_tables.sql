@@ -6,9 +6,9 @@ CREATE TYPE USER_ROLE AS ENUM ('MANAGER', 'CLIENT', 'COURIER');
 CREATE TABLE IF NOT EXISTS users (
     uuid UUID PRIMARY KEY,
     name VARCHAR(45) UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL,
     mail VARCHAR(100) NOT NULL,
-    role USER_ROLE NOT NULL
+    role VARCHAR(45) NOT NULL,
+    password VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS courier_info (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS orders(
     user_id UUID NOT NULL,
     courier_info_id UUID NOT NULL,
     user_address VARCHAR(100) NOT NULL,
-    status ORDER_STATUS DEFAULT  'NOT_COMPLETE',
+    status VARCHAR(20) DEFAULT  'NOT_COMPLETE',
     CONSTRAINT user_fkey FOREIGN KEY (user_id)
     REFERENCES users (uuid),
     CONSTRAINT courier_info_fkey FOREIGN KEY (courier_info_id)

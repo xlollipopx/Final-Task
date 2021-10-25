@@ -1,12 +1,12 @@
 package com.portal.conf
-
 import io.circe.generic.JsonCodec
 
 object app {
   @JsonCodec
   final case class AppConf(
     server: ServerConf,
-    db:     DbConf
+    db:     DbConf,
+    redis:  RedisConf
   )
 
   @JsonCodec
@@ -18,6 +18,9 @@ object app {
     password:          String,
     migrationLocation: String
   )
+
+  @JsonCodec
+  final case class RedisConf(url: String)
 
   @JsonCodec
   final case class ServerConf(

@@ -37,11 +37,7 @@ class DoobieProductRepository[F[_]: Functor: Bracket[*[_], Throwable]](
     list <- selectProduct.query[ProductItem].to[List].transact(tx)
     res = list.map(x =>
       for {
-        c <- (fr"SELECT c.uuid, c.name, c.description FROM product_categories AS pc" ++
-          fr"INNER JOIN categories AS c ON c.uuid = pc.category_id WHERE pc.product_id = ${x.id}")
-          .query[Category]
-          .to[List]
-          .transact(tx)
+        c <- getCategoriesById(x.id.value)
         pc = ProductItemWithCategories(x, c)
       } yield pc
     )
