@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(45) UNIQUE NOT NULL,
     mail VARCHAR(100) NOT NULL,
     role VARCHAR(45) NOT NULL,
-    password VARCHAR(100) NOT NULL
+    password VARCHAR(264) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS courier_info (
@@ -52,7 +52,7 @@ name VARCHAR(45) NOT NULL,
 description VARCHAR(255) NOT NULL,
 cost VARCHAR(45) NOT NULL,
 publication_date VARCHAR(45) NOT NULL,
-status PRODUCT_STATUS NOT NULL,
+status VARCHAR(45) NOT NULL,
 supplier_id UUID NOT NULL,
 CONSTRAINT supplier_fkey FOREIGN KEY (supplier_id)
 REFERENCES suppliers (uuid)
@@ -124,9 +124,5 @@ CREATE TABLE IF NOT EXISTS imagePath (
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(uuid)
 );
-
-
-INSERT INTO users VALUES
-    ('123e4567-e89b-12d3-a456-556642440000', 'Vlad', '123q', 'vlad@mail.ru', 'MANAGER')
 
 

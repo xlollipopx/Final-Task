@@ -1,5 +1,5 @@
 package com.portal.repository.impl.doobie.meta
-import com.portal.domain.auth.{Email, EncryptedPassword, UserId, UserName, UserRole}
+import com.portal.domain.auth.{Email, EncryptedPassword, PhoneNumber, UserId, UserName, UserRole}
 import com.portal.domain.category.CategoryId
 import com.portal.domain.money.Money
 import com.portal.domain.product.{ProductStatus, _}
@@ -43,6 +43,10 @@ object implicits {
   implicit val userIdMeta: Meta[UserId] =
     Meta[UUID]
       .timap(s => UserId(s))(g => g.value)
+
+  implicit val phoneNumberMeta: Meta[PhoneNumber] =
+    Meta[String]
+      .timap(s => PhoneNumber(s))(g => g.value)
 
   implicit val userNameMeta: Meta[UserName] =
     Meta[String]

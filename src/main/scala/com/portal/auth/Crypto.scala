@@ -10,8 +10,10 @@ import javax.crypto.spec.{IvParameterSpec, PBEKeySpec, SecretKeySpec}
 import javax.crypto.{Cipher, SecretKeyFactory}
 import com.portal.domain.auth._
 import eu.timepit.refined.types.string.NonEmptyString
+import io.circe.generic.JsonCodec
 
-case class PasswordSalt(secret: String)
+@JsonCodec
+case class PasswordSalt(value: String)
 
 trait Crypto {
   def encrypt(value: Password):          EncryptedPassword
@@ -20,13 +22,12 @@ trait Crypto {
 
 object Crypto {
   def make[F[_]: Sync](passwordSalt: PasswordSalt): Crypto = {
-
     val random  = new SecureRandom()
     val ivBytes = new Array[Byte](16)
     random.nextBytes(ivBytes)
     val iv       = new IvParameterSpec(ivBytes);
-    val salt     = passwordSalt.secret.getBytes("UTF-8")
-    val keySpec  = new PBEKeySpec("password".toCharArray(), salt, 65536, 256)
+    val salt     = passwordSalt.value.getBytes("UTF-8")
+    val keySpec  = new PBEKeySpec("password".toCharArray, salt, 65536, 256)
     val factory  = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
     val bytes    = factory.generateSecret(keySpec).getEncoded
     val sKeySpec = new SecretKeySpec(bytes, "AES")
@@ -37,14 +38,14 @@ object Crypto {
 
     new Crypto {
       def encrypt(password: Password): EncryptedPassword = {
-        val base64 = Base64.getEncoder()
+        val base64 = Base64.getEncoder
         val bytes  = password.value.getBytes("UTF-8")
         val result = new String(base64.encode(eCipher.value.doFinal(bytes)), "UTF-8")
         EncryptedPassword(result)
       }
 
       def decrypt(password: EncryptedPassword): Password = {
-        val base64 = Base64.getDecoder()
+        val base64 = Base64.getDecoder
         val bytes  = base64.decode(password.value.getBytes("UTF-8"))
         val result = new String(dCipher.value.doFinal(bytes), "UTF-8")
         Password(result)

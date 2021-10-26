@@ -28,14 +28,6 @@ final case class ProductItemRoutes[F[_]: Monad: Sync](productItemService: Produc
         res     <- Ok(product)
       } yield res
 
-    case req @ POST -> Root / "create" =>
-      req.as[ProductItemWithCategoriesDto].flatMap { dto =>
-        for {
-          product <- productItemService.create(dto)
-          res     <- Ok(product)
-        } yield res
-      }
-
   }
 
   val routes: HttpRoutes[F] = Router(

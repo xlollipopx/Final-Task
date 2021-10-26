@@ -7,6 +7,7 @@ import com.portal.effects.GenUUID
 import dev.profunktor.auth.jwt._
 import eu.timepit.refined.auto._
 import eu.timepit.refined.types.string.NonEmptyString
+import io.circe.generic.JsonCodec
 import io.circe.syntax._
 import pdi.jwt._
 
@@ -16,7 +17,8 @@ trait Tokens[F[_]] {
   def create: F[JwtToken]
 }
 
-case class JwtAccessTokenKeyConfig(secret: String)
+@JsonCodec
+case class JwtAccessTokenKeyConfig(value: String)
 case class TokenExpiration(value: FiniteDuration)
 
 object Tokens {
@@ -28,7 +30,7 @@ object Tokens {
         for {
           uuid     <- GenUUID[F].make
           claim     = JwtClaim(uuid.asJson.noSpaces)
-          secretKey = JwtSecretKey(config.secret)
+          secretKey = JwtSecretKey(config.value)
           token    <- jwtEncode[F](claim, secretKey, JwtAlgorithm.HS256)
         } yield token
     }

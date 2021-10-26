@@ -19,7 +19,6 @@ object auth {
 
   case class Password(value: String)
 
-  //type Email = String Refined MatchesRegex["""(\w)+@([\w\.]+)"""]
   case class Email(value: String)
 
   case class EncryptedPassword(value: String)
@@ -50,6 +49,8 @@ object auth {
     password: PasswordParam
   )
 
+  case class PhoneNumber(value: String)
+
   case class UserNotFound(username: UserName) extends NoStackTrace
   case class UserNameInUse(username: UserName) extends NoStackTrace
   case class InvalidPassword(username: UserName) extends NoStackTrace
@@ -61,12 +62,5 @@ object auth {
     username: UserNameParam,
     password: PasswordParam
   )
-
-  case class ClaimContent(uuid: UUID)
-
-  object ClaimContent {
-    implicit val jsonDecoder: Decoder[ClaimContent] =
-      Decoder.forProduct1("uuid")(ClaimContent.apply)
-  }
 
 }

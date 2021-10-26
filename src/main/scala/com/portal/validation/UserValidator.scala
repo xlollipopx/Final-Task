@@ -3,7 +3,7 @@ package com.portal.validation
 import com.portal.domain.auth.UserRole.{Client, Courier, Manager}
 import com.portal.domain.auth.{Email, Password, UserName, UserRole}
 import com.portal.dto.user.UserWithPasswordDto
-import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidUserRole}
+import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidPasswordFormat, InvalidUserRole}
 import eu.timepit.refined.refineV
 
 sealed trait UserValidationError
@@ -27,13 +27,12 @@ class UserValidator {
 
   def validate(userDto: UserWithPasswordDto) = for {
     mail     <- validateMail(userDto.mail)
-    role     <- validateRole(userDto.role)
     password <- validatePassword(userDto.password)
-  } yield (UserName(userDto.name), mail, role, password)
+  } yield (UserName(userDto.name), mail, password)
 
   def validateMail(mail: String): Either[UserValidationError, Email] = {
     Either.cond(
-      mail.matches("""(\w)+@([\w\.]+)"""),
+      mail.matches("^(.+)@(.+)$"),
       Email(mail),
       InvalidEmailFormat
     )
@@ -43,17 +42,17 @@ class UserValidator {
     Either.cond(
       password.length > 3,
       Password(password),
-      InvalidEmailFormat
+      InvalidPasswordFormat
     )
   }
 
-  def validateRole(role: String): Either[UserValidationError, UserRole] = {
-    role match {
-      case "Manager" => Right(Manager)
-      case "Client"  => Right(Client)
-      case "Courier" => Right(Courier)
-      case _         => Left(InvalidUserRole)
-    }
-  }
+//  def validateRole(role: String): Either[UserValidationError, UserRole] = {
+//    role match {
+//      case "Manager" => Right(Manager)
+//      case "Client"  => Right(Client)
+//      case "Courier" => Right(Courier)
+//      case _         => Left(InvalidUserRole)
+//    }
+//  }
 
 }
