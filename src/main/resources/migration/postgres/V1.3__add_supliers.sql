@@ -1,0 +1,2 @@
+INSERT INTO suppliers VALUES
+    ('123e4267-e89b-12d3-a456-656642440000', 'Rus')

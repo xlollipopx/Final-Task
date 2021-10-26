@@ -6,6 +6,7 @@ import com.portal.conf.app.AppConf
 import com.portal.context.AppContext
 import org.http4s.server.blaze.BlazeServerBuilder
 import io.circe.config.parser
+import org.http4s.server.Server
 
 import scala.concurrent.ExecutionContext
 
@@ -14,9 +15,14 @@ object Application extends IOApp {
     .use(_ => IO.never)
     .as(ExitCode.Success)
 
-  private def serverResource[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, Unit] = for {
+  private def serverResource[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, Server[F]] = for {
     conf    <- Resource.eval(parser.decodePathF[F, AppConf]("app"))
     httpApp <- AppContext.setUp[F](conf)
 
-  } yield httpApp
+    server <- BlazeServerBuilder[F](ExecutionContext.global)
+      .bindHttp(port = 9001, host = "localhost")
+      .withHttpApp(httpApp)
+      .resource
+
+  } yield server
 }
