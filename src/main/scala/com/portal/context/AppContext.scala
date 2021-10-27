@@ -1,7 +1,7 @@
 package com.portal.context
 
 import cats.effect.{Async, Concurrent, ContextShift, Resource, Sync}
-import com.portal.auth.{Crypto, JwtAccessTokenKeyConfig, PasswordSalt, TokenExpiration, Tokens}
+import com.portal.auth.{Crypto, JwtAccessClientTokenKeyConfig, PasswordSalt, TokenExpiration, Tokens}
 import com.portal.conf.app._
 import com.portal.conf.db.{migrator, transactor}
 import com.portal.modules.{HttpApi, Security}

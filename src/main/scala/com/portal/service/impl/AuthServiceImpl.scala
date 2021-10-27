@@ -5,6 +5,7 @@ import com.portal.domain.auth.{
   Email,
   InvalidPassword,
   Password,
+  PhoneNumber,
   UserId,
   UserName,
   UserNameInUse,
@@ -19,7 +20,9 @@ import cats._
 import cats.data.EitherT
 import cats.effect.Sync
 import cats.syntax.all._
-import com.portal.dto.user.{LoginUserDto, UserWithPasswordDto}
+import com.portal.domain.auth.UserRole.{Client, Courier}
+import com.portal.dto.user
+import com.portal.dto.user.{CourierWithPasswordDto, LoginUserDto, UserWithPasswordDto}
 import com.portal.effects.GenUUID
 import dev.profunktor.auth.jwt.JwtToken
 import dev.profunktor.redis4cats.RedisCommands
@@ -36,25 +39,20 @@ class AuthServiceImpl[F[_]: Sync: Monad](
 ) extends AuthService[F] {
   private val TokenExpiration = tokenExpiration.value
 
-  override def newUser(userDto: UserWithPasswordDto, role: UserRole): F[Either[UserValidationError, JwtToken]] = {
+  override def newClient(userDto: UserWithPasswordDto, role: UserRole): F[Either[UserValidationError, JwtToken]] = {
     val result: EitherT[F, UserValidationError, JwtToken] = for {
-      x <- EitherT(validator.validate(userDto).pure[F])
+      x <- EitherT(validator.validateClient(userDto).pure[F])
 
       (username, mail, password) = x
       token <- EitherT.liftF(userRepository.findByName(username).flatMap {
         case Some(_) => UserNameInUse(username).raiseError[F, JwtToken]
         case None =>
           for {
-
             uuid <- GenUUID.forSync[F].make
-            _    <- userRepository.createUser(User(UserId(uuid), username, mail, role), crypto.encrypt(password))
-            t    <- tokens.create
-            user  = User(UserId(uuid), username, mail, role).asJson.noSpaces
-            _    <- redis.setEx(t.value, user, TokenExpiration)
-            _    <- redis.setEx(username.value, t.value, TokenExpiration)
+            _    <- userRepository.createUser(User(UserId(uuid), username, mail, Client), crypto.encrypt(password))
+            t    <- setToken(User(UserId(uuid), username, mail, Client))
           } yield t
       })
-
     } yield token
 
     result.value
@@ -71,7 +69,7 @@ class AuthServiceImpl[F[_]: Sync: Monad](
         redis.get(userDto.name).flatMap {
           case Some(t) => JwtToken(t).pure[F]
           case None =>
-            tokens.create.flatTap { t =>
+            tokens.create(user.role).flatTap { t =>
               redis.setEx(t.value, user.asJson.noSpaces, TokenExpiration) *>
                 redis.setEx(userDto.name, t.value, TokenExpiration)
             }
@@ -81,4 +79,34 @@ class AuthServiceImpl[F[_]: Sync: Monad](
   override def logout(token: JwtToken, username: UserName): F[Unit] =
     redis.del(token.value) *> redis.del(username.value).void
 
+  override def newCourier(userDto: CourierWithPasswordDto, role: UserRole): F[Either[UserValidationError, JwtToken]] = {
+    val result: EitherT[F, UserValidationError, JwtToken] = for {
+      x <- EitherT(validator.validateCourier(userDto).pure[F])
+
+      (username, mail, password) = x
+      token <- EitherT.liftF(userRepository.findByName(username).flatMap {
+        case Some(_) => UserNameInUse(username).raiseError[F, JwtToken]
+        case None =>
+          for {
+            uuid <- GenUUID.forSync[F].make
+            _ <- userRepository.createCourier(
+              User(UserId(uuid), username, mail, Courier),
+              PhoneNumber(userDto.phoneNumber),
+              crypto.encrypt(password)
+            )
+            t <- setToken(User(UserId(uuid), username, mail, Courier))
+          } yield t
+      })
+
+    } yield token
+
+    result.value
+  }
+
+  private def setToken(user: User) = for {
+    t <- tokens.create(user.role)
+    u  = user.asJson.noSpaces
+    _ <- redis.setEx(t.value, u, TokenExpiration)
+    _ <- redis.setEx(user.name.value, t.value, TokenExpiration)
+  } yield t
 }

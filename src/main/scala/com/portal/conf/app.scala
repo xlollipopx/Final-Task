@@ -1,5 +1,5 @@
 package com.portal.conf
-import com.portal.auth.{JwtAccessTokenKeyConfig, PasswordSalt}
+import com.portal.auth.{JwtAccessClientTokenKeyConfig, PasswordSalt}
 import io.circe.generic.JsonCodec
 
 object app {
@@ -26,13 +26,20 @@ object app {
 
   @JsonCodec
   final case class TokenConfig(
-    jwtAccessTokenKeyConfig: JwtAccessTokenKeyConfig,
-    adminTokenKeyConfig:     AdminTokenKeyConfig,
-    passwordSalt:            PasswordSalt,
-    expiration:              Int
+    jwtAccessClientTokenKeyConfig:  JwtAccessClientTokenKeyConfig,
+    jwtAccessCourierTokenKeyConfig: JwtAccessCourierTokenKeyConfig,
+    adminTokenKeyConfig:            AdminTokenKeyConfig,
+    passwordSalt:                   PasswordSalt,
+    expiration:                     Int
   )
+
   @JsonCodec
   final case class AdminTokenKeyConfig(
+    value: String
+  )
+
+  @JsonCodec
+  final case class JwtAccessCourierTokenKeyConfig(
     value: String
   )
 

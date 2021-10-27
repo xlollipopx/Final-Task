@@ -11,6 +11,7 @@ import com.portal.domain.category.Category
 import doobie.postgres.implicits._
 import meta.implicits._
 import cats.effect._
+import com.portal.domain.supplier.Supplier
 
 import java.util.UUID
 
@@ -26,12 +27,15 @@ class DoobieProductRepository[F[_]: Functor: Bracket[*[_], Throwable]](
   private val createProduct: Fragment = fr"INSERT INTO products(" ++
     fr"uuid, name, description, cost, publication_date, status, supplier_id)"
 
+  private val updateProduct: Fragment = fr"UPDATE products"
+  private val deleteProduct: Fragment = fr"DELETE FROM products"
+
   private val createProductCategories: Fragment = fr"INSERT INTO product_categories(" ++
     fr"category_id, product_id)"
 
-  private val updateProduct: Fragment = fr"UPDATE products"
-  private val deleteProduct: Fragment = fr"DELETE FROM products"
-  //private val getCategories: Fragment = fr""
+  private val updateCategory: Fragment = fr"UPDATE categories"
+
+  private val updateSupplier: Fragment = fr"UPDATE suppliers"
 
   override def all(): F[List[ProductItemWithCategories]] = for {
     list <- selectProduct.query[ProductItem].to[List].transact(tx)
@@ -68,11 +72,31 @@ class DoobieProductRepository[F[_]: Functor: Bracket[*[_], Throwable]](
     }
   } yield res
 
-  override def setStatus(status: ProductStatus): F[Int] = ???
+  override def setStatus(id: UUID, status: ProductStatus): F[Int] = {
+    (updateProduct ++
+      fr"SET status = $status " ++
+      fr"WHERE uuid = $id").update.run.transact(tx)
+  }
 
-  override def update(item: ProductItem): F[Int] = ???
+  override def update(item: ProductItemWithCategories): F[Int] = {
+    val res = for {
+      a <- {
+        (updateProduct ++
+          fr"SET name = ${item.product.name}, " ++
+          fr"description = ${item.product.description}, " ++
+          fr"cost = ${item.product.cost}, " ++
+          fr"publication_date = ${item.product.publicationDate}, " ++
+          fr"status = ${item.product.status} " ++
+          fr"WHERE uuid = ${item.product.id}").update.run
+      }
+      _ <- updateCategoriesForProduct(item.product.id.value, item.categories)
+      _ <- updateSuppliers(item.product.supplier)
+    } yield a
+    res.transact(tx)
+  }
 
-  override def delete(item: ProductItem): F[Int] = ???
+  override def delete(id: UUID): F[Int] =
+    (deleteProduct ++ fr"WHERE uuid = $id").update.run.transact(tx)
 
   def getCategoriesById(id: UUID): F[List[Category]] = {
     (fr"SELECT c.uuid, c.name, c.description FROM product_categories AS pc" ++
@@ -88,4 +112,18 @@ class DoobieProductRepository[F[_]: Functor: Bracket[*[_], Throwable]](
       .traverse(identity)
 
   } yield l
+
+  def updateCategoriesForProduct(id: UUID, list: List[Category]): ConnectionIO[List[Int]] = for {
+    l <- list
+      .map(x =>
+        (updateCategory ++ fr"SET name = ${x.name}, description = ${x.description} WHERE uuid = ${id}").update.run
+      )
+      .traverse(identity)
+
+  } yield l
+
+  def updateSuppliers(supplier: Supplier): ConnectionIO[Int] = {
+    (updateSupplier ++ fr"SET name = ${supplier.name}  WHERE uuid = ${supplier.id.value}").update.run
+  }
+
 }
