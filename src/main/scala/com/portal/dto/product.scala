@@ -21,5 +21,6 @@ object product {
   final case class CategoryDto(id: String, name: String, description: String)
 
   final case class SupplierDto(id: String, name: String)
+  final case class ProductStatusDto(id: String, status: String)
 
 }

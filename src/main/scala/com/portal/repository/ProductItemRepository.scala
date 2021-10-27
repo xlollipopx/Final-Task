@@ -10,11 +10,11 @@ import java.util.UUID
 trait ProductItemRepository[F[_]] {
 
   def all(): F[List[ProductItemWithCategories]]
-  def create(product:   ProductItemWithCategories): F[Int]
-  def findById(id:      UUID):                      F[Option[ProductItemWithCategories]]
-  def setStatus(status: ProductStatus):             F[Int]
-  def update(product:   ProductItem):               F[Int]
-  def delete(product:   ProductItem):               F[Int]
+  def create(item:  ProductItemWithCategories): F[Int]
+  def findById(id:  UUID): F[Option[ProductItemWithCategories]]
+  def setStatus(id: UUID, status: ProductStatus): F[Int]
+  def update(item:  ProductItemWithCategories): F[Int]
+  def delete(id:    UUID):                      F[Int]
 }
 
 object ProductItemRepository {

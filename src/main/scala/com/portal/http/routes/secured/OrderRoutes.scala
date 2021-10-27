@@ -1,9 +1,9 @@
 package com.portal.http.routes.secured
 
+import com.portal.http.auth.users.ClientUser
+
 import cats.{Defer, Monad}
 import cats.syntax.all._
-import com.portal.http.auth.users.ClientUser
-import com.portal.service.AuthService
 import dev.profunktor.auth.AuthHeaders
 import org.http4s._
 import org.http4s.dsl.Http4sDsl

@@ -21,7 +21,6 @@ final case class LogoutRoutes[F[_]: Monad: Defer](
       AuthHeaders
         .getBearerToken(ar.req)
         .traverse_(auth.logout(_, user.value.name)) *> NoContent()
-
   }
 
   def routes(authMiddleware: AuthMiddleware[F, ClientUser]): HttpRoutes[F] = Router(
