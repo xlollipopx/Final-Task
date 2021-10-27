@@ -2,7 +2,7 @@ package com.portal.validation
 
 import com.portal.domain.auth.UserRole.{Client, Courier, Manager}
 import com.portal.domain.auth.{Email, Password, UserName, UserRole}
-import com.portal.dto.user.UserWithPasswordDto
+import com.portal.dto.user.{CourierWithPasswordDto, UserWithPasswordDto}
 import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidPasswordFormat, InvalidUserRole}
 import eu.timepit.refined.refineV
 
@@ -25,10 +25,13 @@ object UserValidationError {
 
 class UserValidator {
 
-  def validate(userDto: UserWithPasswordDto) = for {
+  def validateClient(userDto: UserWithPasswordDto) = for {
     mail     <- validateMail(userDto.mail)
     password <- validatePassword(userDto.password)
   } yield (UserName(userDto.name), mail, password)
+
+  def validateCourier(userDto: CourierWithPasswordDto) =
+    validateClient(UserWithPasswordDto(userDto.name, userDto.mail, userDto.password))
 
   def validateMail(mail: String): Either[UserValidationError, Email] = {
     Either.cond(

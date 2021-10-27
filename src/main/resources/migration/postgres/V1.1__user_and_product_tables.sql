@@ -62,8 +62,8 @@ CREATE TABLE IF NOT EXISTS product_categories(
     category_id UUID NOT NULL,
     product_id UUID NOT NULL,
     PRIMARY KEY (category_id, product_id),
-    FOREIGN KEY (category_id) REFERENCES categories(uuid),
-    FOREIGN KEY (product_id) REFERENCES products (uuid)
+    FOREIGN KEY (category_id) REFERENCES categories(uuid) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (uuid)  ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS orders_products(

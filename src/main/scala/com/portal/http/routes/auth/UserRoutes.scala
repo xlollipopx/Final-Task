@@ -3,7 +3,7 @@ package com.portal.http.routes.auth
 import com.portal.domain.auth.UserRole
 import com.portal.domain.auth.UserRole.{Client, Courier}
 import com.portal.service.AuthService
-import com.portal.dto.user.UserWithPasswordDto
+import com.portal.dto.user.{CourierWithPasswordDto, UserWithPasswordDto}
 import cats.Monad
 import cats.effect.Sync
 import org.http4s.{HttpRoutes, Request, Response}
@@ -22,19 +22,21 @@ final case class UserRoutes[F[_]: Monad: Sync](
   private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
     //localhost:9001/auth/clients
     case req @ POST -> Root / "client" =>
-      makeUser(req, Client)
+      req.as[UserWithPasswordDto].flatMap { dto =>
+        for {
+          token <- authService.newClient(dto, Client)
+          res   <- Ok(token)
+        } yield res
+      }
+
     //localhost:9001/auth/courier
     case req @ POST -> Root / "courier" =>
-      makeUser(req, Courier)
-  }
-
-  private def makeUser(req: Request[F], role: UserRole): F[Response[F]] = {
-    req.as[UserWithPasswordDto].flatMap { dto =>
-      for {
-        token <- authService.newUser(dto, role)
-        res   <- Ok(token)
-      } yield res
-    }
+      req.as[CourierWithPasswordDto].flatMap { dto =>
+        for {
+          token <- authService.newCourier(dto, Courier)
+          res   <- Ok(token)
+        } yield res
+      }
   }
 
   val routes: HttpRoutes[F] = Router(

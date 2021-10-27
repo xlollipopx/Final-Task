@@ -10,9 +10,10 @@ import com.portal.validation.ProductValidationError.{InvalidDateFormat, InvalidI
 
 import java.time.LocalDate
 import java.util.{Currency, UUID}
+import scala.util.control.NoStackTrace
 import scala.util.{Failure, Success, Try}
 
-sealed trait ProductValidationError
+sealed trait ProductValidationError extends NoStackTrace
 
 object ProductValidationError {
 
