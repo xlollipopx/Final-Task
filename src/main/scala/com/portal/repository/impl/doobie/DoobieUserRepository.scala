@@ -6,7 +6,7 @@ import com.portal.domain.auth
 import com.portal.domain.auth.{EncryptedPassword, PhoneNumber, UserId, UserName}
 import com.portal.http.auth.users.{User, UserWithPassword}
 import com.portal.repository.UserRepository
-import doobie.{Fragment, Transactor}
+import doobie.{ConnectionIO, Fragment, Transactor}
 import doobie.postgres.implicits._
 import doobie.implicits._
 import meta.implicits._
@@ -26,7 +26,7 @@ class DoobieUserRepository[F[_]: Functor: Bracket[*[_], Throwable]](
   override def all(): F[List[User]] = selectUser.query[User].to[List].transact(tx)
 
   override def createUser(user: User, password: EncryptedPassword): F[Int] =
-    (createUser ++ fr"VALUES(${user.id}, ${user.name}, ${user.mail}, ${user.role}, ${password})").update.run
+    create(user: User, password: EncryptedPassword)
       .transact(tx)
 
   override def findByName(name: UserName): F[Option[UserWithPassword]] = {
@@ -34,9 +34,15 @@ class DoobieUserRepository[F[_]: Functor: Bracket[*[_], Throwable]](
   }
 
   override def createCourier(user: User, phoneNumber: PhoneNumber, password: EncryptedPassword): F[Int] = {
-    createUser(user, password)
-    (createCourier ++ fr"VALUES(${user.id}, $phoneNumber)").update.run
-      .transact(tx)
+    val res = for {
+      _ <- create(user, password)
+      a <- (createCourier ++ fr"VALUES(${user.id}, $phoneNumber)").update.run
+    } yield a
+    res.transact(tx)
+  }
+
+  private def create(user: User, password: EncryptedPassword): ConnectionIO[Int] = {
+    (createUser ++ fr"VALUES(${user.id}, ${user.name}, ${user.mail}, ${user.role}, ${password})").update.run
   }
 
 }

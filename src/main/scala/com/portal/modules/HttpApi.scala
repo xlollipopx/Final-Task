@@ -10,9 +10,9 @@ import dev.profunktor.auth.JwtAuthMiddleware
 import org.http4s.implicits._
 import org.http4s.server.middleware.{AutoSlash, CORS}
 import cats.syntax.semigroupk._
-import com.portal.http.auth.users.{ClientUser, ManagerUser}
+import com.portal.http.auth.users.{ClientUser, CourierUser, ManagerUser}
 import com.portal.http.routes.admin.AdminProductRoutes
-import com.portal.http.routes.secured.OrderRoutes
+import com.portal.http.routes.secured.{CourierRoutes, OrderRoutes}
 import org.http4s.server.Router
 
 object HttpApi {
@@ -30,6 +30,9 @@ sealed abstract class HttpApi[F[_]: Async](
   private val usersMiddleware =
     JwtAuthMiddleware[F, ClientUser](security.userJwtAuth.value, security.usersAuth.findUser)
 
+  private val courierMiddleware =
+    JwtAuthMiddleware[F, CourierUser](security.courierJwtAuth.value, security.courierAuth.findUser)
+
   //auth
   val userRoutes   = UserRoutes[F](security.authService).routes
   val loginRoutes  = LoginRoutes[F](security.authService).routes
@@ -42,10 +45,11 @@ sealed abstract class HttpApi[F[_]: Async](
   val adminProductRoutes = AdminProductRoutes[F](productItemService).routes(managerMiddleware)
 
   //secured
-  val orderRoutes = OrderRoutes[F]().routes(usersMiddleware)
+  val orderRoutes   = OrderRoutes[F]().routes(usersMiddleware)
+  val courierRoutes = CourierRoutes[F]().routes(courierMiddleware)
 
   private val openRoutes: HttpRoutes[F] =
-    productRoutes <+> userRoutes <+> loginRoutes <+> logoutRoutes <+> orderRoutes
+    productRoutes <+> userRoutes <+> loginRoutes <+> courierRoutes <+> logoutRoutes <+> orderRoutes
 
   private val adminRoutes: HttpRoutes[F] =
     adminProductRoutes

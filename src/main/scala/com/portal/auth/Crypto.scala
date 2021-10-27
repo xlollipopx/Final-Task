@@ -11,6 +11,7 @@ import javax.crypto.{Cipher, SecretKeyFactory}
 import com.portal.domain.auth._
 import eu.timepit.refined.types.string.NonEmptyString
 import io.circe.generic.JsonCodec
+import javax.crypto.{Cipher, KeyGenerator}
 
 @JsonCodec
 case class PasswordSalt(value: String)
@@ -22,33 +23,31 @@ trait Crypto {
 
 object Crypto {
   def make[F[_]: Sync](passwordSalt: PasswordSalt): Crypto = {
-    val random  = new SecureRandom()
-    val ivBytes = new Array[Byte](16)
-    random.nextBytes(ivBytes)
-    val iv       = new IvParameterSpec(ivBytes);
-    val salt     = passwordSalt.value.getBytes("UTF-8")
-    val keySpec  = new PBEKeySpec("password".toCharArray, salt, 65536, 256)
-    val factory  = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
-    val bytes    = factory.generateSecret(keySpec).getEncoded
-    val sKeySpec = new SecretKeySpec(bytes, "AES")
-    val eCipher  = EncryptCipher(Cipher.getInstance("AES/CBC/PKCS5Padding"))
-    eCipher.value.init(Cipher.ENCRYPT_MODE, sKeySpec, iv)
-    val dCipher = DecryptCipher(Cipher.getInstance("AES/CBC/PKCS5Padding"))
-    dCipher.value.init(Cipher.DECRYPT_MODE, sKeySpec, iv)
+    val secretKey = {
+      val cryptoSecret = passwordSalt.value
+      val keyGenerator = KeyGenerator.getInstance("AES")
+      keyGenerator.init(128)
+      keyGenerator.generateKey()
+    }
 
     new Crypto {
       def encrypt(password: Password): EncryptedPassword = {
-        val base64 = Base64.getEncoder
-        val bytes  = password.value.getBytes("UTF-8")
-        val result = new String(base64.encode(eCipher.value.doFinal(bytes)), "UTF-8")
-        EncryptedPassword(result)
+        val plainText = password.value
+//        val plainTextBytes = plainText.getBytes
+//        val cipher         = Cipher.getInstance("AES")
+//        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+//        val encryptedBytes = cipher.doFinal(plainTextBytes)
+//        val result         = Base64.getEncoder.encodeToString(encryptedBytes)
+        EncryptedPassword(plainText)
       }
 
       def decrypt(password: EncryptedPassword): Password = {
-        val base64 = Base64.getDecoder
-        val bytes  = base64.decode(password.value.getBytes("UTF-8"))
-        val result = new String(dCipher.value.doFinal(bytes), "UTF-8")
-        Password(result)
+        val encryptedText = password.value
+//        val encryptedTextBytes = Base64.getDecoder.decode(encryptedText)
+//        val cipher             = Cipher.getInstance("AES")
+//        cipher.init(Cipher.DECRYPT_MODE, secretKey)
+//        val decryptedBytes = cipher.doFinal(encryptedTextBytes)
+        Password(new String(encryptedText))
       }
     }
   }
