@@ -5,11 +5,19 @@ import cats.data.EitherT
 import cats.implicits._
 import cats.effect.Sync
 import com.portal.domain.product
-import com.portal.domain.product.{ProductItem, ProductItemId, ProductItemWithCategories, ProductStatus}
+import com.portal.domain.product.{
+  ProductItem,
+  ProductItemId,
+  ProductItemSearch,
+  ProductItemWithCategories,
+  ProductItemWithCategoriesModify,
+  ProductStatus
+}
 import com.portal.dto.product._
 import com.portal.repository.ProductItemRepository
 import com.portal.service.ProductItemService
 import com.portal.util.ModelMapper._
+import com.portal.validation.ProductSearchValidation.validateProductItemSearch
 import com.portal.validation.{ProductItemValidator, ProductValidationError}
 
 import java.util.UUID
@@ -19,36 +27,45 @@ class ProductItemServiceImpl[F[_]: Sync: Monad](
   validator:             ProductItemValidator
 ) extends ProductItemService[F] {
 
-  override def all: F[List[ProductItemWithCategoriesDto]] = for {
+  override def all: F[List[ProductItemWithIdCategoriesDto]] = for {
     products <- productItemRepository.all()
-  } yield products.map(ProductItemWithCategoriesDomainToDto)
+  } yield products.map(ProductItemWithCategoriesDomainToDtoWithId)
 
   override def findById(id: UUID): F[Option[ProductItemWithCategoriesDto]] = for {
     product <- productItemRepository.findById(id)
   } yield product.map(ProductItemWithCategoriesDomainToDto)
 
   override def create(
-    item: ProductItemWithCategoriesDto
-  ): F[Either[ProductValidationError, ProductItemWithCategoriesDto]] = modify(item, productItemRepository.create)
+    item: ProductItemWithCategoriesDtoModify
+  ): F[Either[ProductValidationError, ProductItemWithCategoriesDtoModify]] = {
+    val result: EitherT[F, ProductValidationError, ProductItemWithCategoriesDtoModify] = for {
 
-  override def update(
-    item: ProductItemWithCategoriesDto
-  ): F[Either[ProductValidationError, ProductItemWithCategoriesDto]] = modify(item, productItemRepository.update)
-
-  private def modify(
-    item: ProductItemWithCategoriesDto,
-    f:    ProductItemWithCategories => F[Int]
-  ): F[Either[ProductValidationError, ProductItemWithCategoriesDto]] = {
-    val result: EitherT[F, ProductValidationError, ProductItemWithCategoriesDto] = for {
-
-      x                                                            <- EitherT(validator.validate(item).pure[F])
+      x                                                            <- EitherT(validator.validateProductModify(item).pure[F])
       (name, description, cost, date, status, supplier, categories) = x
       productItem =
         ProductItem(ProductItemId(UUID.randomUUID()), name, description, cost, date, status, supplier)
-      domain = ProductItemWithCategories(productItem, categories)
+      domain = ProductItemWithCategoriesModify(productItem, categories)
 
-      _ <- EitherT.liftF(f(domain))
-    } yield ProductItemWithCategoriesDomainToDto(domain)
+      _ <- EitherT.liftF(productItemRepository.create(domain))
+    } yield ProductWithCategoriesModifyDomainToDto(domain)
+
+    result.value
+  }
+
+  override def update(
+    id:   UUID,
+    item: ProductItemWithCategoriesDtoModify
+  ): F[Either[ProductValidationError, ProductItemWithCategoriesDtoModify]] = {
+    val result: EitherT[F, ProductValidationError, ProductItemWithCategoriesDtoModify] = for {
+
+      x                                                            <- EitherT(validator.validateProductModify(item).pure[F])
+      (name, description, cost, date, status, supplier, categories) = x
+      productItem =
+        ProductItem(ProductItemId(id), name, description, cost, date, status, supplier)
+      domain = ProductItemWithCategoriesModify(productItem, categories)
+
+      _ <- EitherT.liftF(productItemRepository.update(domain))
+    } yield ProductWithCategoriesModifyDomainToDto(domain)
 
     result.value
   }
@@ -66,7 +83,20 @@ class ProductItemServiceImpl[F[_]: Sync: Monad](
 
       x <- EitherT(validator.validateStatus(status).pure[F])
       _ <- EitherT.liftF(productItemRepository.setStatus(id, x))
-    } yield x.toString
+    } yield x
+
+    result.value
+  }
+
+  override def searchByCriteria(
+    item: ProductItemSearchDto
+  ): F[Either[ProductValidationError, List[ProductItemWithIdCategoriesDto]]] = {
+    val result: EitherT[F, ProductValidationError, List[ProductItemWithIdCategoriesDto]] = for {
+
+      domain <- EitherT(validateProductItemSearch(item).pure[F])
+
+      res <- EitherT.liftF(productItemRepository.searchByCriteria(domain))
+    } yield res.map(ProductItemWithCategoriesDomainToDtoWithId)
 
     result.value
   }

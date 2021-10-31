@@ -1,8 +1,6 @@
 package com.portal.http.routes
 
 import com.portal.service.ProductItemService
-import com.portal.dto.product.ProductItemWithCategoriesDto
-
 import cats.Monad
 import cats.effect.Sync
 import org.http4s.HttpRoutes
@@ -11,6 +9,7 @@ import org.http4s.circe._
 import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
 import org.http4s.dsl.Http4sDsl
 import cats.implicits._
+import com.portal.dto.product.ProductItemSearchDto
 import org.http4s.server.Router
 
 final case class ProductItemRoutes[F[_]: Monad: Sync](productItemService: ProductItemService[F]) extends Http4sDsl[F] {
@@ -27,6 +26,14 @@ final case class ProductItemRoutes[F[_]: Monad: Sync](productItemService: Produc
         product <- productItemService.findById(id)
         res     <- Ok(product)
       } yield res
+
+    case req @ GET -> Root / "find-by-criteria" =>
+      req.as[ProductItemSearchDto].flatMap { dto =>
+        for {
+          list <- productItemService.searchByCriteria(dto)
+          res  <- Ok(list)
+        } yield res
+      }
 
   }
 

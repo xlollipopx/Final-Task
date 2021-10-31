@@ -5,7 +5,13 @@ import com.portal.domain.money.Money
 import com.portal.domain.product.{ProductItem, ProductStatus}
 import com.portal.domain.product.ProductStatus.{Available, InProcessing, NotAvailable}
 import com.portal.domain.supplier.{Supplier, SupplierId}
-import com.portal.dto.product.{CategoryDto, ProductItemDto, ProductItemWithCategoriesDto}
+import com.portal.dto.product.{
+  CategoryDto,
+  ProductItemDto,
+  ProductItemSearchDto,
+  ProductItemWithCategoriesDto,
+  ProductItemWithCategoriesDtoModify
+}
 import com.portal.validation.ProductValidationError.{InvalidDateFormat, InvalidId, InvalidMoneyFormat, InvalidStatus}
 
 import java.time.LocalDate
@@ -37,12 +43,20 @@ object ProductValidationError {
 
 class ProductItemValidator {
 
-  def validate(item: ProductItemWithCategoriesDto) = for {
+  def validateWithCategories(item: ProductItemWithCategoriesDto) = for {
     date      <- validateDate(item.product.publicationDate)
     cost      <- validateMoney(item.product.cost, item.product.currency)
     status    <- validateStatus(item.product.status)
     supplier  <- validateSupplier(item.product.supplierId, item.product.supplierName)
     categories = item.categories.map(x => Category(CategoryId(UUID.fromString(x.id)), x.name, x.description))
+  } yield (item.product.name, item.product.description, cost, date, status, supplier, categories)
+
+  def validateProductModify(item: ProductItemWithCategoriesDtoModify) = for {
+    date      <- validateDate(item.product.publicationDate)
+    cost      <- validateMoney(item.product.cost, item.product.currency)
+    status    <- validateStatus(item.product.status)
+    supplier  <- validateSupplier(item.product.supplierId, item.product.supplierName)
+    categories = item.categories.map(x => (CategoryId(UUID.fromString(x.id))))
   } yield (item.product.name, item.product.description, cost, date, status, supplier, categories)
 
   def validateDate(birthday: String): Either[ProductValidationError, LocalDate] = {
@@ -53,11 +67,19 @@ class ProductItemValidator {
     )
   }
 
-  def validateMoney(salary: String, currency: String): Either[ProductValidationError, Money] = {
+  def validateUUID(uuid: String): Either[ProductValidationError, UUID] = {
+    Either.cond(
+      UUID.fromString(uuid).isInstanceOf[UUID],
+      UUID.fromString(uuid),
+      InvalidId
+    )
+  }
+
+  def validateMoney(cost: String, currency: String): Either[ProductValidationError, Money] = {
     for {
       amount <- Either.cond(
-        BigDecimal(salary).isInstanceOf[BigDecimal],
-        BigDecimal(salary),
+        BigDecimal(cost).isInstanceOf[BigDecimal],
+        BigDecimal(cost),
         InvalidMoneyFormat
       )
       currency <- Either.cond(
