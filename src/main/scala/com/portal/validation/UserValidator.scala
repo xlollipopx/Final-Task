@@ -7,7 +7,6 @@ import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidPas
 import eu.timepit.refined.refineV
 
 sealed trait UserValidationError
-
 object UserValidationError {
 
   final case object InvalidEmailFormat extends UserValidationError {

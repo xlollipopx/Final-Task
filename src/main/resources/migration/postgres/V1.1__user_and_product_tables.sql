@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS courier_info (
 CREATE TABLE IF NOT EXISTS orders(
     uuid UUID PRIMARY KEY,
     user_id UUID NOT NULL,
-    courier_info_id UUID NOT NULL,
-    user_address VARCHAR(100) NOT NULL,
+    courier_info_id UUID,
+    user_address VARCHAR(100),
     status VARCHAR(20) DEFAULT  'NOT_COMPLETE',
     CONSTRAINT user_fkey FOREIGN KEY (user_id)
     REFERENCES users (uuid),
@@ -50,8 +50,9 @@ CREATE TABLE IF NOT EXISTS products (
 uuid UUID PRIMARY KEY,
 name VARCHAR(45) NOT NULL,
 description VARCHAR(255) NOT NULL,
-cost VARCHAR(45) NOT NULL,
-publication_date VARCHAR(45) NOT NULL,
+cost INT NOT NULL,
+currency VARCHAR(45) NOT NULL,
+publication_date DATE NOT NULL,
 status VARCHAR(45) NOT NULL,
 supplier_id UUID NOT NULL,
 CONSTRAINT supplier_fkey FOREIGN KEY (supplier_id)
@@ -71,8 +72,8 @@ CREATE TABLE IF NOT EXISTS orders_products(
     product_id UUID NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (order_id, product_id),
-    FOREIGN KEY (order_id) REFERENCES orders(uuid),
-    FOREIGN KEY (product_id) REFERENCES products (uuid)
+    FOREIGN KEY (order_id) REFERENCES orders(uuid) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products (uuid) ON DELETE CASCADE
 );
 
 

@@ -20,12 +20,12 @@ final case class UserRoutes[F[_]: Monad: Sync](
   private val prefixPath = "/auth"
 
   private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
-    //localhost:9001/auth/clients
+    //localhost:9001/auth/client
     case req @ POST -> Root / "client" =>
       req.as[UserWithPasswordDto].flatMap { dto =>
         for {
           token <- authService.newClient(dto, Client)
-          res   <- Ok(token)
+          res   <- Ok(token.toOption.get)
         } yield res
       }
 
@@ -34,7 +34,7 @@ final case class UserRoutes[F[_]: Monad: Sync](
       req.as[CourierWithPasswordDto].flatMap { dto =>
         for {
           token <- authService.newCourier(dto, Courier)
-          res   <- Ok(token)
+          res   <- Ok(token.toOption.get)
         } yield res
       }
   }
