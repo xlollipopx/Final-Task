@@ -4,7 +4,7 @@ import cats.effect.{Async, Concurrent, ContextShift, Resource, Sync}
 import com.portal.auth.{Crypto, JwtAccessClientTokenKeyConfig, PasswordSalt, TokenExpiration, Tokens}
 import com.portal.conf.app._
 import com.portal.conf.db.{migrator, transactor}
-import com.portal.modules.{HttpApi, Security}
+import com.portal.modules.{HttpApi, Repositories, Security, Services}
 import cats.syntax.all._
 import com.portal.http.auth.users
 import com.portal.repository.{ProductItemRepository, UserRepository}
@@ -21,18 +21,18 @@ object AppContext {
 
   def setUp[F[_]: ContextShift: Sync: Concurrent](conf: AppConf): Resource[F, HttpApp[F]] = for {
 
-    tx               <- transactor[F](conf.db)
-    migrator         <- Resource.eval(migrator[F](conf.db))
-    _                <- Resource.eval(migrator.migrate())
-    productRepository = ProductItemRepository.of[F](tx)
-    userRepository    = UserRepository.of[F](tx)
-    productService    = ProductItemService.of[F](productRepository, new ProductItemValidator)
+    tx       <- transactor[F](conf.db)
+    migrator <- Resource.eval(migrator[F](conf.db))
+    _        <- Resource.eval(migrator.migrate())
+
+    repositories = Repositories.make[F](tx)
+    services     = Services.make[F](repositories)
 
     redis <- Redis[F].utf8(conf.redis.url)
 
-    security = Security.make[F](conf, redis, userRepository)
+    security = Security.make[F](conf, redis, repositories.userRepository)
 
-    httpApp = HttpApi.make[F](productService, security).httpApp
+    httpApp = HttpApi.make[F](services, security).httpApp
 
   } yield httpApp
 }
