@@ -12,7 +12,7 @@ import meta.implicits._
 
 import java.util.UUID
 
-class GroupRepositoryImpl[F[_]: Functor: Bracket[*[_], Throwable]](
+class DoobieGroupRepository[F[_]: Functor: Bracket[*[_], Throwable]](
   tx: Transactor[F]
 ) extends GroupRepository[F] {
 
@@ -32,4 +32,9 @@ class GroupRepositoryImpl[F[_]: Functor: Bracket[*[_], Throwable]](
 
   override def addUser(groupId: UUID, userId: UUID): F[Int] =
     fr"INSERT INTO groups_and_users VALUES(${groupId}, ${userId})".update.run.transact(tx)
+
+  override def addProduct(groupId: UUID, productId: UUID): F[Int] = {
+    fr"INSERT INTO specific_products VALUES(${groupId}, ${productId})".update.run.transact(tx)
+  }
+
 }
