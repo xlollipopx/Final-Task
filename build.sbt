@@ -86,6 +86,7 @@ libraryDependencies ++= Seq(
   "is.cir"                   %% "ciris-refined"                 % ciris,
   "com.comcast"              %% "ip4s-core"                     % "1.2.1",
   "org.slf4j"                 % "slf4j-nop"                     % "1.6.4",
+  "org.quartz-scheduler"      % "quartz"                        % "2.3.0"
 )
 
 libraryDependencies ++= Seq(
