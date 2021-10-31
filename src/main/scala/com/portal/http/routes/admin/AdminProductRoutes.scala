@@ -1,20 +1,16 @@
 package com.portal.http.routes.admin
 
+import com.portal.dto.product.{ProductItemWithCategoriesDto, ProductItemWithCategoriesDtoModify}
+import com.portal.http.auth.users.ManagerUser
 import com.portal.service.ProductItemService
-import com.portal.domain.auth.UserRole.Client
-import com.portal.dto.product.{ProductItemWithCategoriesDto, ProductStatusDto}
 import cats.Monad
 import cats.effect.Sync
-import org.http4s.{AuthedRoutes, EntityEncoder, HttpRoutes, Response}
+import cats.implicits._
 import io.circe.generic.auto._
-import org.http4s.circe._
 import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
 import org.http4s.dsl.Http4sDsl
-import cats.implicits._
-import com.portal.http.auth.users.ManagerUser
-import com.portal.validation.ProductValidationError
-import com.portal.validation.ProductValidationError._
 import org.http4s.server.{AuthMiddleware, Router}
+import org.http4s.{AuthedRoutes, HttpRoutes, Response}
 
 case class AdminProductRoutes[F[_]: Monad: Sync](
   productService: ProductItemService[F]
@@ -25,7 +21,7 @@ case class AdminProductRoutes[F[_]: Monad: Sync](
   private val httpRoutes: AuthedRoutes[ManagerUser, F] = AuthedRoutes.of {
     //localhost:9001/admin/products/create ...
     case req @ POST -> Root / "create" as manager =>
-      req.req.as[ProductItemWithCategoriesDto].flatMap { dto =>
+      req.req.as[ProductItemWithCategoriesDtoModify].flatMap { dto =>
         for {
           product <- productService.create(dto)
           res     <- Ok(product)
@@ -40,35 +36,14 @@ case class AdminProductRoutes[F[_]: Monad: Sync](
         } yield res
       }
 
-    case req @ POST -> Root / "update" as manager =>
-      req.req.as[ProductItemWithCategoriesDto].flatMap { dto =>
+    case req @ POST -> Root / "update" / UUIDVar(id) as manager =>
+      req.req.as[ProductItemWithCategoriesDtoModify].flatMap { dto =>
         for {
-          status <- productService.update(dto)
+          status <- productService.update(id, dto)
           res    <- Ok(status)
         } yield res
       }
   }
-
-  def marshalResponse[T](
-    result: F[Either[ProductValidationError, T]]
-  )(
-    implicit E: EntityEncoder[F, T]
-  ): F[Response[F]] =
-    result
-      .flatMap {
-        case Left(error) => productErrorToHttpResponse(error)
-        case Right(dto)  => Ok(dto)
-      }
-      .handleErrorWith { ex =>
-        InternalServerError(ex.getMessage)
-      }
-
-  def productErrorToHttpResponse(error: ProductValidationError): F[Response[F]] =
-    error match {
-      case e @ InvalidStatus => NotFound(e.toString)
-
-      case e => BadRequest(e.toString)
-    }
 
   def routes(authMiddleware: AuthMiddleware[F, ManagerUser]): HttpRoutes[F] = Router(
     prefixPath -> authMiddleware(httpRoutes)
