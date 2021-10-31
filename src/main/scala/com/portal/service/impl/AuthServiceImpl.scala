@@ -1,27 +1,17 @@
 package com.portal.service.impl
 
 import com.portal.auth.{Crypto, TokenExpiration, Tokens}
-import com.portal.domain.auth.{
-  Email,
-  InvalidPassword,
-  Password,
-  PhoneNumber,
-  UserId,
-  UserName,
-  UserNameInUse,
-  UserNotFound,
-  UserRole
-}
+import com.portal.domain.auth._
 import com.portal.http.auth.users.User
 import com.portal.repository.UserRepository
 import com.portal.service.AuthService
-import com.portal.validation.{UserValidationError, UserValidator}
+import com.portal.validation.{ProductValidationError, UserValidationError, UserValidator}
 import cats._
 import cats.data.EitherT
+import io.circe.parser.decode
 import cats.effect.Sync
 import cats.syntax.all._
 import com.portal.domain.auth.UserRole.{Client, Courier}
-import com.portal.dto.user
 import com.portal.dto.user.{CourierWithPasswordDto, LoginUserDto, UserWithPasswordDto}
 import com.portal.effects.GenUUID
 import dev.profunktor.auth.jwt.JwtToken
@@ -103,10 +93,26 @@ class AuthServiceImpl[F[_]: Sync: Monad](
     result.value
   }
 
-  private def setToken(user: User) = for {
+  private def setToken(user: User): F[JwtToken] = for {
     t <- tokens.create(user.role)
     u  = user.asJson.noSpaces
     _ <- redis.setEx(t.value, u, TokenExpiration)
     _ <- redis.setEx(user.name.value, t.value, TokenExpiration)
   } yield t
+
+//  override def getUserIdByToken(token: JwtToken): F[UserId] = {
+//    import io.circe.generic.codec.DerivedAsObjectCodec.deriveCodec
+//    val user = redis
+//      .get(token.value)
+//      .map {
+//        _.flatMap { u =>
+//          decode[User](u).toOption
+//        }
+//      }
+//    val res = for {
+//      optionU <- user
+//      id      <- optionU.get.id.pure[F]
+//    } yield id
+//    res
+//  }
 }
