@@ -1,0 +1,4 @@
+INSERT INTO users VALUES
+    ('1e3e4267-e89b-12d3-a456-656652440000', 'manager', 'maganer@mail.ru', 'MANAGER',
+     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.ezRkMmE5NWY5LTdiNjQtNDhlZi05MWNlLWQ3YzUwYjU3NzFkZH0.JosXbBNajlNxWGksSiB-AjOGkI8UMX2m_MFP7r3UUAY'
+    )

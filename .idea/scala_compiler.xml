@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <profile name="sbt 1" modules="Final-Task">
+      <option name="deprecationWarnings" value="true" />
+      <option name="featureWarnings" value="true" />
+      <parameters>
+        <parameter value="-Ymacro-annotations" />
+        <parameter value="-Xfatal-warnings" />
+      </parameters>
+      <plugins>
+        <plugin path="C:\Users\USER\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\typelevel\kind-projector_2.13.6\0.13.0\kind-projector_2.13.6-0.13.0.jar" />
+      </plugins>
+    </profile>
+    <profile name="sbt 2" modules="project-core,shopping-cart-test-suite">
+      <parameters>
+        <parameter value="-Ymacro-annotations" />
+        <parameter value="-Yrangepos" />
+        <parameter value="-Wconf:cat=unused:info" />
+      </parameters>
+      <plugins>
+        <plugin path="C:\Users\USER\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\typelevel\kind-projector_2.13.5\0.13.2\kind-projector_2.13.5-0.13.2.jar" />
+        <plugin path="C:\Users\USER\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\com\olegpy\better-monadic-for_2.13\0.3.1\better-monadic-for_2.13-0.3.1.jar" />
+        <plugin path="C:\Users\USER\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scalameta\semanticdb-scalac_2.13.5\4.4.29\semanticdb-scalac_2.13.5-4.4.29.jar" />
+      </plugins>
+    </profile>
+  </component>
+</project>

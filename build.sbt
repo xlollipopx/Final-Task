@@ -26,6 +26,7 @@ val scalaTestVersion        = "3.1.0.0-RC2"
 val h2Version               = "1.4.200"
 val enumeratumVersion       = "1.6.1"
 val dtoMapperChimneyVersion = "0.6.1"
+val ciris                   = "2.2.0"
 
 libraryDependencies ++= Seq(
   "org.typelevel"            %% "cats-core"                     % catsVersion,
@@ -75,9 +76,17 @@ libraryDependencies ++= Seq(
   "org.tpolecat"             %% "doobie-postgres"               % doobieVersion,
   "org.flywaydb"              % "flyway-core"                   % "6.2.4",
   "org.postgresql"            % "postgresql"                    % "42.2.6",
-  "dev.profunktor"           %% "redis4cats-effects"            % "0.13.1",
+  "dev.profunktor"           %% "redis4cats-effects"            % "0.14.0",
   "io.estatico"              %% "newtype"                       % "0.4.4",
-  "dev.profunktor"           %% "http4s-jwt-auth"               % "0.0.7"
+  "dev.profunktor"           %% "http4s-jwt-auth"               % "0.0.7",
+  "org.typelevel"            %% "log4cats-core"                 % "1.2.0",
+  "org.typelevel"            %% "log4cats-slf4j"                % "1.2.0",
+  "is.cir"                   %% "ciris"                         % ciris,
+  "is.cir"                   %% "ciris-enumeratum"              % ciris,
+  "is.cir"                   %% "ciris-refined"                 % ciris,
+  "com.comcast"              %% "ip4s-core"                     % "1.2.1",
+  "org.slf4j"                 % "slf4j-nop"                     % "1.6.4",
+  "org.quartz-scheduler"      % "quartz"                        % "2.3.0"
 )
 
 libraryDependencies ++= Seq(

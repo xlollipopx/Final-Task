@@ -2,7 +2,7 @@ package com.portal.conf
 
 import cats.implicits._
 import cats.effect.{Async, Blocker, ContextShift, Resource, Sync}
-import com.portal.conf.app.DbConf
+import com.portal.conf.app.{AppConf, DbConf}
 import doobie.Transactor
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
