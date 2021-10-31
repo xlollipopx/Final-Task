@@ -2,6 +2,7 @@ package com.portal.repository.impl.doobie.meta
 import com.portal.domain.auth.{Email, EncryptedPassword, PhoneNumber, UserId, UserName, UserRole}
 import com.portal.domain.category.CategoryId
 import com.portal.domain.money.Money
+import com.portal.domain.order.{OrderId, OrderStatus}
 import com.portal.domain.product.{ProductStatus, _}
 import com.portal.domain.supplier.{Supplier, SupplierId}
 import doobie.{Meta, Read, Write}
@@ -12,23 +13,38 @@ import java.util.{Currency, UUID}
 
 object implicits {
 //Product
+
   implicit val productStatusMeta: Meta[ProductStatus] =
     Meta[String]
       .timap(s => ProductStatus.withNameInsensitive(snakeToCamel(s.toLowerCase)))(g => normalizedSnakeCase(g.toString))
 
-  implicit val dateMeta: Meta[LocalDate] =
-    Meta[String]
-      .timap(s => LocalDate.parse(s))(g => g.toString)
+  implicit val productIdMeta: Meta[ProductItemId] =
+    Meta[UUID]
+      .timap(s => ProductItemId(s))(g => g.value)
 
-  implicit val moneyMeta: Meta[Money] =
-    Meta[String]
-      .timap(s => toMoney(s))(g => g.amount.toString() + " " + g.currency.toString)
+  implicit val supplierIdMeta: Meta[SupplierId] =
+    Meta[UUID]
+      .timap(s => SupplierId(s))(g => g.value)
+
+//  implicit val dateMeta: Meta[LocalDate] =
+//    Meta[String]
+//      .timap(s => LocalDate.parse(s))(g => g.toString)
+
+//  implicit val moneyMeta: Meta[Money] =
+//    Meta[String]
+//      .timap(s => toMoney(s))(g => g.amount.toString() + " " + g.currency.toString)
 
   def toMoney(s: String): Money = {
     val list = s.split("\\s").toList
     Money(BigDecimal(list.head), Currency.getInstance(list.last))
   }
+  implicit val moneyRead: Read[Money] =
+    Read[(Int, String)].map { case (x, y) => Money(BigDecimal.apply(x), Currency.getInstance(y)) }
 
+  implicit val moneyWrite: Write[Money] =
+    Write[(Int, String)].contramap(p => (p.amount.toInt, p.currency.toString))
+
+  //Supplier
   implicit val pointRead: Read[Supplier] =
     Read[(UUID, String)].map { case (x, y) => Supplier(SupplierId(x), y) }
 
@@ -36,8 +52,8 @@ object implicits {
     Write[(UUID, String)].contramap(p => (p.id.value, p.name))
 
   implicit val categoryIdMeta: Meta[CategoryId] =
-    Meta[String]
-      .timap(s => CategoryId(UUID.fromString(s)))(g => g.value.toString)
+    Meta[UUID]
+      .timap(s => CategoryId(s))(g => g.value)
   //////User
 
   implicit val userIdMeta: Meta[UserId] =
@@ -63,6 +79,15 @@ object implicits {
   implicit val userRoleMeta: Meta[UserRole] =
     Meta[String]
       .timap(s => UserRole.withNameInsensitive(snakeToCamel(s.toLowerCase)))(g => normalizedSnakeCase(g.toString))
+
+  //Order
+  implicit val orderStatusMeta: Meta[OrderStatus] =
+    Meta[String]
+      .timap(s => OrderStatus.withNameInsensitive(snakeToCamel(s.toLowerCase)))(g => normalizedSnakeCase(g.toString))
+
+  implicit val orderIdMeta: Meta[OrderId] =
+    Meta[UUID]
+      .timap(s => OrderId(s))(g => g.value)
 
   def snakeToCamel(name: String): String =
     "_([a-z\\d])".r
