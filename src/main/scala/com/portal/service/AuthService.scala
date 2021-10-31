@@ -2,7 +2,7 @@ package com.portal.service
 
 import cats.effect.Sync
 import com.portal.auth.{Crypto, TokenExpiration, Tokens}
-import com.portal.domain.auth.{Password, UserName, UserRole}
+import com.portal.domain.auth.{Password, UserId, UserName, UserRole}
 import com.portal.dto.user.{CourierWithPasswordDto, LoginUserDto, UserWithPasswordDto}
 import com.portal.repository.UserRepository
 import com.portal.service.impl.AuthServiceImpl
