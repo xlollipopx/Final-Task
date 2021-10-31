@@ -39,7 +39,7 @@ sealed abstract class Security[F[_]] private (
 )
 
 object Security {
-  def make[F[_]: Sync: ContextShift: Sync: Concurrent](
+  def make[F[_]: Sync: ContextShift: Concurrent](
     cfg:   AppConf,
     redis: RedisCommands[F, String, String],
     users: UserRepository[F]
