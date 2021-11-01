@@ -1,4 +1,4 @@
-package com.portal.http.routes.admin
+package com.portal.http.routes.manager
 
 import com.portal.dto.product.{ProductItemWithCategoriesDto, ProductItemWithCategoriesDtoModify}
 import com.portal.http.auth.users.ManagerUser
@@ -43,6 +43,13 @@ case class AdminProductRoutes[F[_]: Monad: Sync](
           res    <- Ok(status)
         } yield res
       }
+
+    case POST -> Root / "delete" / UUIDVar(id) as manager =>
+      for {
+        status <- productService.delete(id)
+        res    <- Ok(status)
+      } yield res
+
   }
 
   def routes(authMiddleware: AuthMiddleware[F, ManagerUser]): HttpRoutes[F] = Router(

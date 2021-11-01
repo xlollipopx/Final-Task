@@ -23,7 +23,7 @@ class DoobieUserRepository[F[_]: Functor: Bracket[*[_], Throwable]](
   private val createCourier: Fragment = fr"INSERT INTO courier_info(" ++
     fr"uuid, phone_number)"
 
-  override def all(): F[List[User]] = selectUser.query[User].to[List].transact(tx)
+  override def all(): F[List[UserWithPassword]] = selectUser.query[UserWithPassword].to[List].transact(tx)
 
   override def createUser(user: User, password: EncryptedPassword): F[Int] =
     create(user: User, password: EncryptedPassword)

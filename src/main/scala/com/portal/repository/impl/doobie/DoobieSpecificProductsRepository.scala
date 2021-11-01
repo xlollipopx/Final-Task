@@ -20,7 +20,7 @@ class DoobieSpecificProductsRepository[F[_]: Functor: Bracket[*[_], Throwable]](
 ) extends SpecificProductsRepository[F] {
 
   private val selectGroup: Fragment =
-    fr"SELECT g.uuid, g.name FROM groups" ++
+    fr"SELECT g.uuid, g.name FROM user_groups" ++
       fr"AS g" ++
       fr"INNER JOIN groups_and_users AS gu ON gu.user_group_id = g.uuid "
 

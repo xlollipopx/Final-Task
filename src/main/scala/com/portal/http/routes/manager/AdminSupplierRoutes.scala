@@ -1,4 +1,4 @@
-package com.portal.http.routes.admin
+package com.portal.http.routes.manager
 
 import cats.Monad
 import cats.effect.Sync

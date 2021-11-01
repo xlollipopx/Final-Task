@@ -1,5 +1,9 @@
 package com.portal.repository
 
+import cats.effect.Sync
+import com.portal.repository.impl.doobie.DoobieSubscriptionRepository
+import doobie.Transactor
+
 import java.util.UUID
 
 trait SubscriptionRepository[F[_]] {
@@ -10,4 +14,7 @@ trait SubscriptionRepository[F[_]] {
 
 }
 
-object SubscriptionRepository {}
+object SubscriptionRepository {
+  def of[F[_]: Sync](tx: Transactor[F]): DoobieSubscriptionRepository[F] =
+    new DoobieSubscriptionRepository[F](tx)
+}

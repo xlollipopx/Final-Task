@@ -3,12 +3,12 @@ package com.portal.http.routes.secured
 import com.portal.http.auth.users.ClientUser
 import com.portal.dto.product.QuantityDto
 import com.portal.service.OrderService
+import com.portal.domain.order.UserAddress
+import com.portal.domain.product.ProductItemId
 import dev.profunktor.auth.AuthHeaders
 import cats.{Defer, Monad}
 import cats.effect.Sync
 import cats.implicits._
-import com.portal.domain.order.UserAddress
-import com.portal.domain.product.ProductItemId
 import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
 import org.http4s.dsl.Http4sDsl
@@ -24,7 +24,7 @@ case class OrderRoutes[F[_]: Monad: Sync](
   private val httpRoutes: AuthedRoutes[ClientUser, F] = AuthedRoutes.of {
     case GET -> Root / "shopping-cart" as user =>
       for {
-        l   <- orderService.getOrderByToken(user.value.id)
+        l   <- orderService.getOrderByUserId(user.value.id)
         res <- Ok(l)
       } yield res
 
