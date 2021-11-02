@@ -32,7 +32,6 @@ object AppContext {
     redis <- Redis[F].utf8(conf.redis.url)
 
     security = Security.make[F](conf, redis, repositories.userRepository)
-    //_       <- Resource.eval(SchedulerMail.startSchedule(repositories.subscriptionRepository))
 
     httpApp = HttpApi.make[F](services, security).httpApp
 

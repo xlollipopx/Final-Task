@@ -26,6 +26,7 @@ class EmailNotification {
       properties.load(propertiesStream)
       propertiesStream.close()
     } else {}
+
     val mailSession = Session.getDefaultInstance(properties)
     val message     = new MimeMessage(mailSession)
     message.setFrom(new InternetAddress("musictop932"))
