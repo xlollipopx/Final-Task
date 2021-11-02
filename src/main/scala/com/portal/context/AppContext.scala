@@ -6,6 +6,7 @@ import com.portal.conf.app._
 import com.portal.conf.db.{migrator, transactor}
 import com.portal.modules.{HttpApi, Repositories, Security, Services}
 import cats.syntax.all._
+import com.portal.Scheduler.SchedulerMail
 import com.portal.http.auth.users
 import com.portal.repository.{ProductItemRepository, UserRepository}
 import com.portal.service.{AuthService, ProductItemService}
@@ -31,6 +32,7 @@ object AppContext {
     redis <- Redis[F].utf8(conf.redis.url)
 
     security = Security.make[F](conf, redis, repositories.userRepository)
+    //_       <- Resource.eval(SchedulerMail.startSchedule(repositories.subscriptionRepository))
 
     httpApp = HttpApi.make[F](services, security).httpApp
 

@@ -11,6 +11,8 @@ import org.http4s.dsl.Http4sDsl
 import cats.implicits._
 import com.portal.dto.product.ProductItemSearchDto
 import org.http4s.server.Router
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 final case class ProductItemRoutes[F[_]: Monad: Sync](productItemService: ProductItemService[F]) extends Http4sDsl[F] {
   private val prefixPath = "/products"

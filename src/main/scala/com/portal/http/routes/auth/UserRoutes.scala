@@ -12,6 +12,7 @@ import org.http4s.circe._
 import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
 import org.http4s.dsl.Http4sDsl
 import cats.implicits._
+import com.portal.http.routes.Marshaller.marshalResponse
 import org.http4s.server.Router
 
 final case class UserRoutes[F[_]: Monad: Sync](
@@ -23,19 +24,19 @@ final case class UserRoutes[F[_]: Monad: Sync](
     //localhost:9001/auth/client
     case req @ POST -> Root / "client" =>
       req.as[UserWithPasswordDto].flatMap { dto =>
-        for {
+        val res = for {
           token <- authService.newClient(dto, Client)
-          res   <- Ok(token.toOption.get)
-        } yield res
+        } yield token
+        marshalResponse(res)
       }
 
     //localhost:9001/auth/courier
     case req @ POST -> Root / "courier" =>
       req.as[CourierWithPasswordDto].flatMap { dto =>
-        for {
+        val res = for {
           token <- authService.newCourier(dto, Courier)
-          res   <- Ok(token.toOption.get)
-        } yield res
+        } yield token
+        marshalResponse(res)
       }
   }
 

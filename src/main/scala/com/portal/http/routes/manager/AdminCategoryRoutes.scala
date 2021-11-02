@@ -1,4 +1,4 @@
-package com.portal.http.routes.admin
+package com.portal.http.routes.manager
 
 import com.portal.dto.product.CategoryDtoModify
 import com.portal.http.auth.users.ManagerUser

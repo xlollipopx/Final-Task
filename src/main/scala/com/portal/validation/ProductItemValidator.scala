@@ -19,7 +19,7 @@ import java.util.{Currency, UUID}
 import scala.util.control.NoStackTrace
 import scala.util.{Failure, Success, Try}
 
-sealed trait ProductValidationError extends NoStackTrace
+sealed trait ProductValidationError extends NoStackTrace with ValidationError
 
 object ProductValidationError {
 
@@ -61,7 +61,7 @@ class ProductItemValidator {
 
   def validateDate(birthday: String): Either[ProductValidationError, LocalDate] = {
     Either.cond(
-      LocalDate.parse(birthday).isInstanceOf[LocalDate],
+      Try(LocalDate.parse(birthday)).isSuccess,
       LocalDate.parse(birthday),
       InvalidDateFormat
     )
@@ -78,7 +78,7 @@ class ProductItemValidator {
   def validateMoney(cost: String, currency: String): Either[ProductValidationError, Money] = {
     for {
       amount <- Either.cond(
-        BigDecimal(cost).isInstanceOf[BigDecimal],
+        Try(BigDecimal(cost)).isSuccess,
         BigDecimal(cost),
         InvalidMoneyFormat
       )

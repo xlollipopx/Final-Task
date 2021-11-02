@@ -21,14 +21,19 @@ class OrderServiceImpl[F[_]: Sync: Monad](orderRepository: OrderRepository[F]) e
   override def addProductToOrder(productId: ProductItemId, userId: UserId, quantity: Int): F[Boolean] =
     orderRepository.addProductToOrder(productId, userId, quantity)
 
-  override def getOrderByToken(userId: UserId): F[Option[OrderWithProductsDto]] =
+  override def getOrderByUserId(userId: UserId): F[Option[OrderWithProductsDto]] =
     orderRepository.getOrderByUserId(userId).flatMap(x => x.map(OrderWithProductsDomainToDto).pure[F])
 
   override def makeOrder(userId: UserId, address: String): F[Boolean] = {
     orderRepository.makeOrder(userId, address)
   }
 
-  override def assignToCourier(orderId: OrderId, courierId: UserId): Unit = {}
+  override def assignToCourier(orderId: OrderId, courierId: UserId): F[Boolean] =
+    orderRepository.assignToCourier(orderId, courierId)
 
-  override def setDelivered(orderId: OrderId, courierId: UserId): Unit = {}
+  override def setDelivered(orderId: OrderId, courierId: UserId): F[Boolean] =
+    orderRepository.setDelivered(orderId, courierId)
+
+  override def getCourierAssignedOrders(courierId: UserId): F[List[OrderWithProductsDto]] =
+    orderRepository.getCourierAssignedOrders(courierId).map(l => l.map(OrderWithProductsDomainToDto))
 }

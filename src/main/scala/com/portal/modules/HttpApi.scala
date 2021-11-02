@@ -11,9 +11,10 @@ import org.http4s.implicits._
 import org.http4s.server.middleware.{AutoSlash, CORS}
 import cats.syntax.semigroupk._
 import com.portal.http.auth.users.{ClientUser, CourierUser, ManagerUser}
-import com.portal.http.routes.admin.{AdminCategoryRoutes, AdminProductRoutes, AdminSupplierRoutes}
-import com.portal.http.routes.secured.{CourierRoutes, OrderRoutes}
+import com.portal.http.routes.manager.{AdminCategoryRoutes, AdminGroupRoutes, AdminProductRoutes, AdminSupplierRoutes}
+import com.portal.http.routes.secured.{CourierRoutes, OrderRoutes, SpecificProductRoutes, SubscriptionRoutes}
 import org.http4s.server.Router
+import org.typelevel.log4cats.Logger
 
 object HttpApi {
   def make[F[_]: Async](services: Services[F], security: Security[F]): HttpApi[F] =
@@ -47,17 +48,21 @@ sealed abstract class HttpApi[F[_]: Async](
   val adminProductRoutes  = AdminProductRoutes[F](services.productItemService).routes(managerMiddleware)
   val adminCategoryRoutes = AdminCategoryRoutes[F](services.categoryService).routes(managerMiddleware)
   val adminSupplierRoutes = AdminSupplierRoutes[F](services.supplierService).routes(managerMiddleware)
+  val adminGroupRoutes    = AdminGroupRoutes[F](services.groupService).routes(managerMiddleware)
 
   //secured
-  val orderRoutes   = OrderRoutes[F](services.orderService).routes(usersMiddleware)
-  val courierRoutes = CourierRoutes[F]().routes(courierMiddleware)
+  val orderRoutes           = OrderRoutes[F](services.orderService).routes(usersMiddleware)
+  val subscriptionRoutes    = SubscriptionRoutes[F](services.subscriptionService).routes(usersMiddleware)
+  val specificProductRoutes = SpecificProductRoutes[F](services.specificProductsService).routes(usersMiddleware)
+  val courierRoutes         = CourierRoutes[F](services.orderService).routes(courierMiddleware)
 
   private val openRoutes: HttpRoutes[F] =
-    productRoutes <+> userRoutes <+> loginRoutes <+> categoryRoutes <+> supplierRoutes <+>
-      courierRoutes <+> logoutRoutes <+> orderRoutes
+    productRoutes <+> userRoutes <+> loginRoutes <+>
+      categoryRoutes <+> supplierRoutes <+> courierRoutes <+>
+      logoutRoutes <+> orderRoutes <+> subscriptionRoutes <+> specificProductRoutes
 
   private val adminRoutes: HttpRoutes[F] =
-    adminProductRoutes <+> adminCategoryRoutes <+> adminSupplierRoutes
+    adminProductRoutes <+> adminCategoryRoutes <+> adminSupplierRoutes <+> adminGroupRoutes
 
   private val routes: HttpRoutes[F] = Router(
     ""       -> openRoutes,

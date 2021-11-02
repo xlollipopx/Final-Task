@@ -10,7 +10,7 @@ import doobie.Transactor
 import java.util.UUID
 
 trait UserRepository[F[_]] {
-  def all(): F[List[User]]
+  def all(): F[List[UserWithPassword]]
   def createUser(user:    User, password: EncryptedPassword): F[Int]
   def createCourier(user: User, phoneNumber: PhoneNumber, password: EncryptedPassword): F[Int]
   def findByName(name:    UserName): F[Option[UserWithPassword]]

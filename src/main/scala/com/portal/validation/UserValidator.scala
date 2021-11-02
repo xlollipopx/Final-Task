@@ -3,10 +3,12 @@ package com.portal.validation
 import com.portal.domain.auth.UserRole.{Client, Courier, Manager}
 import com.portal.domain.auth.{Email, Password, UserName, UserRole}
 import com.portal.dto.user.{CourierWithPasswordDto, UserWithPasswordDto}
-import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidPasswordFormat, InvalidUserRole}
+import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidPasswordFormat}
 import eu.timepit.refined.refineV
 
-sealed trait UserValidationError
+import scala.util.control.NoStackTrace
+
+sealed trait UserValidationError extends NoStackTrace with ValidationError
 object UserValidationError {
 
   final case object InvalidEmailFormat extends UserValidationError {
@@ -17,9 +19,6 @@ object UserValidationError {
     override def toString: String = "Wrong password format!"
   }
 
-  final case object InvalidUserRole extends UserValidationError {
-    override def toString: String = "Impossible role!"
-  }
 }
 
 class UserValidator {

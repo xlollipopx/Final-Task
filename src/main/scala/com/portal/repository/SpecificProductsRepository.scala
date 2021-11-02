@@ -3,6 +3,7 @@ package com.portal.repository
 import cats.effect.Sync
 import com.portal.domain.group.UserGroup
 import com.portal.domain.product.ProductItem
+import com.portal.dto.product.ProductItemDto
 import com.portal.repository.impl.doobie.DoobieSpecificProductsRepository
 import doobie.Transactor
 
