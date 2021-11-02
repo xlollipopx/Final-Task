@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS user_category_subscriptions(
     FOREIGN KEY (category_id) REFERENCES categories (uuid)
 );
 
-CREATE TABLE IF NOT EXISTS user_supplier_ubscriptions (
+CREATE TABLE IF NOT EXISTS user_supplier_subscriptions (
     user_id UUID NOT NULL,
     supplier_id UUID NOT NULL,
     PRIMARY KEY (user_id, supplier_id),

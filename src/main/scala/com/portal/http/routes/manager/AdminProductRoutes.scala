@@ -6,6 +6,7 @@ import com.portal.service.ProductItemService
 import cats.Monad
 import cats.effect.Sync
 import cats.implicits._
+import com.portal.http.routes.Marshaller.marshalResponse
 import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
 import org.http4s.dsl.Http4sDsl
@@ -22,26 +23,26 @@ case class AdminProductRoutes[F[_]: Monad: Sync](
     //localhost:9001/admin/products/create ...
     case req @ POST -> Root / "create" as manager =>
       req.req.as[ProductItemWithCategoriesDtoModify].flatMap { dto =>
-        for {
+        val res = for {
           product <- productService.create(dto)
-          res     <- Ok(product)
-        } yield res
+        } yield product
+        marshalResponse(res)
       }
 
     case req @ POST -> Root / "update" / "status" / UUIDVar(id) as manager =>
       req.req.as[String].flatMap { dto =>
-        for {
+        val res = for {
           status <- productService.setStatus(id, dto)
-          res    <- Ok(status)
-        } yield res
+        } yield status
+        marshalResponse(res)
       }
 
     case req @ POST -> Root / "update" / UUIDVar(id) as manager =>
       req.req.as[ProductItemWithCategoriesDtoModify].flatMap { dto =>
-        for {
-          status <- productService.update(id, dto)
-          res    <- Ok(status)
-        } yield res
+        val res = for {
+          product <- productService.update(id, dto)
+        } yield product
+        marshalResponse(res)
       }
 
     case POST -> Root / "delete" / UUIDVar(id) as manager =>

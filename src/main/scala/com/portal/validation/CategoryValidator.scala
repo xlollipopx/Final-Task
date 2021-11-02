@@ -2,7 +2,7 @@ package com.portal.validation
 
 import com.portal.dto.product.CategoryDto
 
-sealed trait CategoryValidatorError
+sealed trait CategoryValidatorError extends ValidationError
 object CategoryValidatorError {
 
   final case object InvalidId extends CategoryValidatorError {

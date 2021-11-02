@@ -1,9 +1,11 @@
 package com.portal.repository
 
 import cats.effect.Sync
+import com.portal.domain.supplier.SupplierWithUsers
 import com.portal.repository.impl.doobie.DoobieSubscriptionRepository
 import doobie.Transactor
 
+import java.time.LocalDate
 import java.util.UUID
 
 trait SubscriptionRepository[F[_]] {
@@ -11,7 +13,7 @@ trait SubscriptionRepository[F[_]] {
   def deleteSupplierSubscription(userId: UUID, supplierId: UUID): F[Int]
   def createCategorySubscription(userId: UUID, categoryId: UUID): F[Int]
   def deleteCategorySubscription(userId: UUID, categoryId: UUID): F[Int]
-
+  def getSuppliersWithUsers(date:        LocalDate): F[List[SupplierWithUsers]]
 }
 
 object SubscriptionRepository {

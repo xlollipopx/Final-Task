@@ -14,6 +14,7 @@ import com.portal.http.auth.users.{ClientUser, CourierUser, ManagerUser}
 import com.portal.http.routes.manager.{AdminCategoryRoutes, AdminGroupRoutes, AdminProductRoutes, AdminSupplierRoutes}
 import com.portal.http.routes.secured.{CourierRoutes, OrderRoutes, SpecificProductRoutes, SubscriptionRoutes}
 import org.http4s.server.Router
+import org.typelevel.log4cats.Logger
 
 object HttpApi {
   def make[F[_]: Async](services: Services[F], security: Security[F]): HttpApi[F] =
