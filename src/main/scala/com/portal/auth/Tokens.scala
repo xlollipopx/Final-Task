@@ -8,8 +8,6 @@ import com.portal.domain.auth.UserRole
 import com.portal.domain.auth.UserRole.{Client, Courier, Manager}
 import com.portal.effects.GenUUID
 import dev.profunktor.auth.jwt._
-import eu.timepit.refined.auto._
-import eu.timepit.refined.types.string.NonEmptyString
 import io.circe.generic.JsonCodec
 import io.circe.syntax._
 import pdi.jwt._

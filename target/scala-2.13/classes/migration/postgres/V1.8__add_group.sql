@@ -1,0 +1,2 @@
+INSERT INTO user_groups VALUES
+    ('987e4267-e89b-12d3-a456-656642440001', 'vip');

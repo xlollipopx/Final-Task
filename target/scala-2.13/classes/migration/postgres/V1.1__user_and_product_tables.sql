@@ -35,14 +35,14 @@ CREATE TABLE IF NOT EXISTS orders(
 
 CREATE TABLE IF NOT EXISTS suppliers (
      uuid UUID PRIMARY KEY,
-     name VARCHAR(45) UNIQUE NOT NULL
+     name VARCHAR(45) NOT NULL
 );
 
 
 CREATE TABLE IF NOT EXISTS categories (
      uuid UUID PRIMARY KEY,
-     name VARCHAR(45) UNIQUE NOT NULL,
-     description VARCHAR(255) UNIQUE NOT NULL
+     name VARCHAR(45) NOT NULL,
+     description VARCHAR(255) NOT NULL
 );
 
 
@@ -86,16 +86,16 @@ CREATE TABLE IF NOT EXISTS groups_and_users(
     user_group_id UUID NOT NULL,
     user_id UUID NOT NULL,
     PRIMARY KEY (user_group_id, user_id),
-    FOREIGN KEY (user_group_id) REFERENCES user_groups(uuid),
-    FOREIGN KEY (user_id) REFERENCES users(uuid)
+    FOREIGN KEY (user_group_id) REFERENCES user_groups(uuid) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(uuid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS specific_products(
     user_group_id UUID NOT NULL,
     product_id UUID NOT NULL,
     PRIMARY KEY (user_group_id, product_id),
-    FOREIGN KEY (user_group_id) REFERENCES user_groups(uuid),
-    FOREIGN KEY (product_id) REFERENCES products(uuid)
+    FOREIGN KEY (user_group_id) REFERENCES user_groups(uuid) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(uuid) ON DELETE CASCADE
 );
 
 
@@ -114,9 +114,9 @@ CREATE TABLE IF NOT EXISTS user_supplier_subscriptions (
     supplier_id UUID NOT NULL,
     PRIMARY KEY (user_id, supplier_id),
     CONSTRAINT user_fkey FOREIGN KEY (user_id)
-    REFERENCES users (uuid),
+    REFERENCES users (uuid) ON DELETE CASCADE,
     CONSTRAINT supplier_fkey FOREIGN KEY (supplier_id)
-    REFERENCES suppliers (uuid)
+    REFERENCES suppliers (uuid) ON DELETE CASCADE
 );
 
 

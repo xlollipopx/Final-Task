@@ -27,6 +27,7 @@ val h2Version               = "1.4.200"
 val enumeratumVersion       = "1.6.1"
 val dtoMapperChimneyVersion = "0.6.1"
 val ciris                   = "2.2.0"
+val AkkaVersion             = "2.6.17"
 
 libraryDependencies ++= Seq(
   "org.typelevel"            %% "cats-core"                     % catsVersion,
@@ -86,12 +87,15 @@ libraryDependencies ++= Seq(
   "is.cir"                   %% "ciris-refined"                 % ciris,
   "com.comcast"              %% "ip4s-core"                     % "1.2.1",
   "org.slf4j"                 % "slf4j-nop"                     % "1.6.4",
-  "org.quartz-scheduler"      % "quartz"                        % "2.3.0"
+  "org.quartz-scheduler"      % "quartz"                        % "2.3.0",
+  "com.typesafe.akka"        %% "akka-actor"                    % AkkaVersion,
+  "javax.mail"                % "mail"                          % "1.4.7",
+  "com.emarsys"              %% "scheduler"                     % "0.4.5"
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest"    % "3.2.9"  % "test",
-  "org.mockito"    % "mockito-core" % "3.12.4" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.9" % "test",
+  "org.scalamock" %% "scalamock" % "5.1.0" % Test
 )
 addCompilerPlugin(
   "org.typelevel" %% "kind-projector" % "0.13.0" cross CrossVersion.full

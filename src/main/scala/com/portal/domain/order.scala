@@ -1,6 +1,6 @@
 package com.portal.domain
 
-import com.portal.domain.auth.{UserId, UserName}
+import com.portal.domain.auth.UserName
 import com.portal.domain.product.ProductItemForOrder
 import enumeratum.{CirceEnum, Enum, EnumEntry}
 

@@ -5,7 +5,6 @@ import com.portal.dto.product.QuantityDto
 import com.portal.service.OrderService
 import com.portal.domain.order.UserAddress
 import com.portal.domain.product.ProductItemId
-import dev.profunktor.auth.AuthHeaders
 import cats.{Defer, Monad}
 import cats.effect.Sync
 import cats.implicits._
@@ -19,7 +18,7 @@ case class OrderRoutes[F[_]: Monad: Sync](
   orderService: OrderService[F]
 ) extends Http4sDsl[F] {
 
-  private val prefixPath = "/order"
+  private val prefixPath = ""
 
   private val httpRoutes: AuthedRoutes[ClientUser, F] = AuthedRoutes.of {
     case GET -> Root / "shopping-cart" as user =>
@@ -28,7 +27,7 @@ case class OrderRoutes[F[_]: Monad: Sync](
         res <- Ok(l)
       } yield res
 
-    case req @ POST -> Root / "add-product" / UUIDVar(id) as user =>
+    case req @ POST -> Root / "products" / "all" / "add-product" / UUIDVar(id) as user =>
       req.req.as[QuantityDto].flatMap { dto =>
         for {
           resp <- orderService.addProductToOrder(ProductItemId(id), user.value.id, dto.quantity)
@@ -36,7 +35,7 @@ case class OrderRoutes[F[_]: Monad: Sync](
         } yield res
       }
 
-    case req @ PUT -> Root / "make-order" as user =>
+    case req @ PUT -> Root / "shopping-cart" / "make-order" as user =>
       req.req.as[UserAddress].flatMap { dto =>
         for {
           resp <- orderService.makeOrder(user.value.id, dto.address)

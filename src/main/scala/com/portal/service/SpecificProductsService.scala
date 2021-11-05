@@ -2,7 +2,6 @@ package com.portal.service
 
 import cats.effect.Sync
 import com.portal.domain.group.UserGroup
-import com.portal.domain.product.ProductItem
 import com.portal.dto.product.ProductItemDto
 import com.portal.repository.SpecificProductsRepository
 import com.portal.service.impl.SpecificProductsServiceImpl

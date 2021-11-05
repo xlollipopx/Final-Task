@@ -10,6 +10,7 @@ import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder
 import org.http4s.dsl.Http4sDsl
 import cats.implicits._
 import com.portal.dto.product.ProductItemSearchDto
+import com.portal.http.routes.Marshaller.marshalResponse
 import org.http4s.server.Router
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
@@ -31,10 +32,11 @@ final case class ProductItemRoutes[F[_]: Monad: Sync](productItemService: Produc
 
     case req @ GET -> Root / "find-by-criteria" =>
       req.as[ProductItemSearchDto].flatMap { dto =>
-        for {
+        val res = for {
           list <- productItemService.searchByCriteria(dto)
-          res  <- Ok(list)
-        } yield res
+        } yield list
+        marshalResponse(res)
+
       }
 
   }

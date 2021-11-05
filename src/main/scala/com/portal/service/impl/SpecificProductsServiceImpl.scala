@@ -2,13 +2,11 @@ package com.portal.service.impl
 
 import cats.Monad
 import cats.effect.Sync
-import com.portal.domain.group.UserGroup
-import com.portal.domain.product.ProductItem
-import com.portal.domain.{group, product}
 import cats.implicits._
+import com.portal.domain.group.UserGroup
 import com.portal.dto.product.ProductItemDto
-import com.portal.repository.{GroupRepository, SpecificProductsRepository}
-import com.portal.service.{GroupService, SpecificProductsService}
+import com.portal.repository.SpecificProductsRepository
+import com.portal.service.SpecificProductsService
 import com.portal.util.ModelMapper.ProductItemDomainToDto
 
 import java.util.UUID

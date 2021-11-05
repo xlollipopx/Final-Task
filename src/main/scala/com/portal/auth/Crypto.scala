@@ -1,17 +1,10 @@
 package com.portal.auth
 
 import cats.effect.Sync
-import cats.syntax.all._
-import eu.timepit.refined.auto._
-
-import java.security.SecureRandom
-import java.util.Base64
-import javax.crypto.spec.{IvParameterSpec, PBEKeySpec, SecretKeySpec}
-import javax.crypto.{Cipher, SecretKeyFactory}
 import com.portal.domain.auth._
-import eu.timepit.refined.types.string.NonEmptyString
 import io.circe.generic.JsonCodec
-import javax.crypto.{Cipher, KeyGenerator}
+
+import javax.crypto.KeyGenerator
 
 @JsonCodec
 case class PasswordSalt(value: String)

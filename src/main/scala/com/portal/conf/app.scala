@@ -6,6 +6,7 @@ object app {
   @JsonCodec
   final case class AppConf(
     server:    ServerConf,
+    scheduler: SchedulerConf,
     db:        DbConf,
     redis:     RedisConf,
     tokenConf: TokenConfig
@@ -19,6 +20,11 @@ object app {
     user:              String,
     password:          String,
     migrationLocation: String
+  )
+  @JsonCodec
+  final case class SchedulerConf(
+    host: String,
+    port: Int
   )
 
   @JsonCodec

@@ -4,7 +4,6 @@ import cats.Functor
 import cats.effect.Bracket
 import com.portal.domain.group.UserGroup
 import com.portal.domain.product.{ProductItem, ProductItemWithCategories}
-import com.portal.domain.{group, product}
 import com.portal.repository.SpecificProductsRepository
 import doobie.{Fragment, Transactor}
 import doobie.postgres.implicits._

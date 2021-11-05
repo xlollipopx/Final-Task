@@ -2,7 +2,6 @@ package com.portal.repository.impl.doobie
 
 import cats.Functor
 import cats.effect.Bracket
-import com.portal.domain.auth
 import com.portal.domain.auth.{EncryptedPassword, PhoneNumber, UserId, UserName}
 import com.portal.http.auth.users.{User, UserWithPassword}
 import com.portal.repository.UserRepository

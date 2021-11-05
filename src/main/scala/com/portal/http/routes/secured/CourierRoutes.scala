@@ -1,15 +1,14 @@
 package com.portal.http.routes.secured
 
-import cats.{Defer, Monad}
 import cats.syntax.all._
+import cats.{Defer, Monad}
 import com.portal.domain.order.OrderId
 import com.portal.http.auth.users.CourierUser
 import com.portal.service.OrderService
-import dev.profunktor.auth.AuthHeaders
 import io.circe.generic.auto._
-import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
-import org.http4s.dsl.Http4sDsl
 import org.http4s._
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
+import org.http4s.dsl.Http4sDsl
 import org.http4s.server._
 
 case class CourierRoutes[F[_]: Monad: Defer](orderService: OrderService[F]) extends Http4sDsl[F] {

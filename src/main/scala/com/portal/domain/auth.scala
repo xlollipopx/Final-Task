@@ -1,15 +1,13 @@
 package com.portal.domain
 
+import com.portal.validation.ValidationError
 import enumeratum.{CirceEnum, Enum, EnumEntry}
-import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.types.string.NonEmptyString
 
 import java.util.UUID
 import javax.crypto.Cipher
 import scala.util.control.NoStackTrace
-import eu.timepit.refined.auto._
-import eu.timepit.refined.string.MatchesRegex
-import eu.timepit.refined.types.string.NonEmptyString
-import io.circe._
 
 object auth {
 
@@ -51,10 +49,9 @@ object auth {
 
   case class PhoneNumber(value: String)
 
-  case class UserNotFound(username: UserName) extends NoStackTrace
-  case class UserNameInUse(username: UserName) extends NoStackTrace
-  case class InvalidPassword(username: UserName) extends NoStackTrace
-  case object UnsupportedOperation extends NoStackTrace
+  case class UserNotFound(username: UserName) extends NoStackTrace with ValidationError
+  case class InvalidPassword(username: UserName) extends NoStackTrace with ValidationError
+  case object UnsupportedOperation extends NoStackTrace with ValidationError
 
   case object TokenNotFound extends NoStackTrace
 

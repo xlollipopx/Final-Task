@@ -1,10 +1,8 @@
 package com.portal.validation
 
-import com.portal.domain.auth.UserRole.{Client, Courier, Manager}
-import com.portal.domain.auth.{Email, Password, UserName, UserRole}
+import com.portal.domain.auth.{Email, Password, UserName}
 import com.portal.dto.user.{CourierWithPasswordDto, UserWithPasswordDto}
 import com.portal.validation.UserValidationError.{InvalidEmailFormat, InvalidPasswordFormat}
-import eu.timepit.refined.refineV
 
 import scala.util.control.NoStackTrace
 
@@ -17,6 +15,10 @@ object UserValidationError {
 
   final case object InvalidPasswordFormat extends UserValidationError {
     override def toString: String = "Wrong password format!"
+  }
+
+  final case object UserNameInUse extends UserValidationError {
+    override def toString: String = "User name in use!"
   }
 
 }

@@ -3,14 +3,11 @@ package com.portal
 import cats.Defer
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.effect._
-import com.portal.Scheduler.SchedulerMail
 import com.portal.conf.app._
 import com.portal.context.AppContext
-import io.chrisdavenport.log4cats.Logger
 import org.http4s.server.blaze.BlazeServerBuilder
 import io.circe.config.parser
 import org.http4s.server.Server
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import scala.concurrent.ExecutionContext
 
