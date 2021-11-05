@@ -1,8 +1,8 @@
 package com.portal.http.routes.auth
 
-import cats.{Defer, Monad}
 import cats.syntax.all._
-import com.portal.http.auth.users.{ClientUser, CommonUser}
+import cats.{Defer, Monad}
+import com.portal.http.auth.users.{ClientUser, CommonUser, CourierUser, ManagerUser}
 import com.portal.service.AuthService
 import dev.profunktor.auth.AuthHeaders
 import org.http4s._
@@ -15,12 +15,15 @@ final case class LogoutRoutes[F[_]: Monad: Defer](
 
   private val prefixPath = "/auth"
 
-  private val httpRoutes: AuthedRoutes[ClientUser, F] = AuthedRoutes.of {
-    //localhost:9001/auth/logout
-    case ar @ POST -> Root / "logout" as user =>
-      AuthHeaders
-        .getBearerToken(ar.req)
-        .traverse_(auth.logout(_, user.value.name)) *> NoContent()
+  private val httpRoutes: AuthedRoutes[ClientUser, F] =
+    AuthedRoutes.of { case ar @ POST -> Root / "logout" as user =>
+      logout(ar, user)
+    }
+
+  private def logout[A](ar: AuthedRequest[F, A], user: CommonUser) = {
+    AuthHeaders
+      .getBearerToken(ar.req)
+      .traverse_(auth.logout(_, user.value.name)) *> NoContent()
   }
 
   def routes(authMiddleware: AuthMiddleware[F, ClientUser]): HttpRoutes[F] = Router(
