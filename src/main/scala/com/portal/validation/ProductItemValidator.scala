@@ -2,16 +2,10 @@ package com.portal.validation
 
 import com.portal.domain.category.{Category, CategoryId}
 import com.portal.domain.money.Money
-import com.portal.domain.product.{ProductItem, ProductStatus}
+import com.portal.domain.product.ProductStatus
 import com.portal.domain.product.ProductStatus.{Available, InProcessing, NotAvailable}
 import com.portal.domain.supplier.{Supplier, SupplierId}
-import com.portal.dto.product.{
-  CategoryDto,
-  ProductItemDto,
-  ProductItemSearchDto,
-  ProductItemWithCategoriesDto,
-  ProductItemWithCategoriesDtoModify
-}
+import com.portal.dto.product.{ProductItemWithCategoriesDto, ProductItemWithCategoriesDtoModify}
 import com.portal.validation.ProductValidationError.{InvalidDateFormat, InvalidId, InvalidMoneyFormat, InvalidStatus}
 
 import java.time.LocalDate

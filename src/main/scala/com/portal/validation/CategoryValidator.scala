@@ -1,7 +1,5 @@
 package com.portal.validation
 
-import com.portal.dto.product.CategoryDto
-
 sealed trait CategoryValidatorError extends ValidationError
 object CategoryValidatorError {
 

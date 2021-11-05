@@ -2,7 +2,6 @@ package com.portal.service.impl
 
 import cats.Monad
 import cats.effect.Sync
-import com.portal.dto.product
 import cats.implicits._
 import com.portal.domain.supplier.{Supplier, SupplierId}
 import com.portal.dto.product.{SupplierDto, SupplierDtoModify}

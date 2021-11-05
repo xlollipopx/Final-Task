@@ -17,7 +17,7 @@ case class SubscriptionRoutes[F[_]: Monad: Sync](
   subscriptionService: SubscriptionService[F]
 ) extends Http4sDsl[F] {
 
-  private val prefixPath = "/subscription"
+  private val prefixPath = "/products/all"
 
   private val httpRoutes: AuthedRoutes[ClientUser, F] = AuthedRoutes.of {
     case POST -> Root / "supplier" / "subscribe" / UUIDVar(id) as user =>

@@ -1,13 +1,12 @@
 package com.portal.service
 
+import cats.effect.Sync
 import com.portal.domain.auth.UserId
-import com.portal.domain.order.{OrderId, OrderWithProducts}
+import com.portal.domain.order.OrderId
 import com.portal.domain.product.ProductItemId
 import com.portal.dto.order.OrderWithProductsDto
 import com.portal.repository.OrderRepository
 import com.portal.service.impl.OrderServiceImpl
-import cats.effect.Sync
-import dev.profunktor.auth.jwt.JwtToken
 
 trait OrderService[F[_]] {
   def all(): F[List[OrderWithProductsDto]]

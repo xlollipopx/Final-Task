@@ -43,9 +43,10 @@ class DoobieSubscriptionRepository[F[_]: Functor: Bracket[*[_], Throwable]](
       fr"WHERE user_id = $userId AND category_id = $categoryId").update.run.transact(tx)
 
   override def getSuppliersWithUsers(date: LocalDate): F[List[SupplierWithUsers]] = for {
-    sps <- (fr"SELECT s.uuid, s.name FROM products" ++
+    sps <- (fr"SELECT DISTINCT s.uuid, s.name FROM products" ++
       fr"AS p" ++
-      fr"INNER JOIN suppliers AS s ON p.supplier_id = s.uuid").query[Supplier].to[List].transact(tx)
+      fr"INNER JOIN suppliers AS s ON p.supplier_id = s.uuid" ++
+      fr"WHERE publication_date = ${date}").query[Supplier].to[List].transact(tx)
     res <- sps
       .map(l =>
         (fr"SELECT u.mail FROM user_supplier_subscriptions" ++

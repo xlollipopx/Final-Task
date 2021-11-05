@@ -4,10 +4,8 @@ import cats.Functor
 import cats.effect.Bracket
 import doobie.{ConnectionIO, Fragment, Transactor}
 import doobie.implicits._
-import com.portal.domain.supplier
 import com.portal.domain.supplier.Supplier
 import com.portal.repository.SupplierRepository
-import doobie.Transactor
 import meta.implicits._
 
 class DoobieSupplierRepository[F[_]: Functor: Bracket[*[_], Throwable]](

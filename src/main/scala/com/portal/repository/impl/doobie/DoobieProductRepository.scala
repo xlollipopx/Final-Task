@@ -1,12 +1,6 @@
 package com.portal.repository.impl.doobie
 
-import com.portal.domain.product.{
-  ProductItem,
-  ProductItemSearch,
-  ProductItemWithCategories,
-  ProductItemWithCategoriesModify,
-  ProductStatus
-}
+import com.portal.domain.product._
 import com.portal.domain.supplier.Supplier
 import com.portal.domain.category.{Category, CategoryId}
 import com.portal.repository.ProductItemRepository
@@ -124,10 +118,8 @@ class DoobieProductRepository[F[_]: Functor: Bracket[*[_], Throwable]](
   }
 
   def updateCategoriesForProduct(id: UUID, list: List[CategoryId]): ConnectionIO[List[Int]] = for {
-    l <- list
-      .map(x => (updateProductCategories ++ fr"SET category_id = ${x.value} WHERE product_id = ${id}").update.run)
-      .traverse(identity)
-
+    _ <- fr"DELETE FROM product_categories WHERE product_id = ${id}".update.run
+    l <- createCategoriesForProduct(id, list)
   } yield l
 
   override def delete(id: UUID): F[Int] =

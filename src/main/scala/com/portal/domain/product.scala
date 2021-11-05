@@ -2,13 +2,12 @@ package com.portal.domain
 
 import com.portal.domain.category.{Category, CategoryId}
 import com.portal.domain.money.Money
-import com.portal.domain.supplier.{Supplier, SupplierId}
-import io.circe.{Decoder, Encoder}
+import com.portal.domain.supplier.Supplier
 import enumeratum.{CirceEnum, Enum, EnumEntry}
 
-import scala.language.implicitConversions
 import java.time.LocalDate
 import java.util.UUID
+import scala.language.implicitConversions
 
 object product {
 

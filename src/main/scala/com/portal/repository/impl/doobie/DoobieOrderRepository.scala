@@ -60,7 +60,6 @@ class DoobieOrderRepository[F[_]: Functor: Sync: Bracket[*[_], Throwable]](
       fr"VALUES(${uuid}, 'NOT_COMPLETE', ${userId})").update.run.transact(tx)
   } yield uuid
 
-  //TODO: IF
   def insertIntoOrderProducts(orderId: OrderId, productId: ProductItemId, quantity: Int): F[Int] = {
     (fr"INSERT INTO orders_products (order_id, product_id, quantity)" ++
       fr"VALUES(${orderId.value}, ${productId}, ${quantity})").update.run.transact(tx)

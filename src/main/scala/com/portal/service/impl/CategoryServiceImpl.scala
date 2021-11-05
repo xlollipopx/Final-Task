@@ -1,9 +1,7 @@
 package com.portal.service.impl
 
 import cats.Monad
-import cats.data.EitherT
 import cats.effect.Sync
-import com.portal.dto.product
 import cats.implicits._
 import com.portal.domain.category.{Category, CategoryId}
 import com.portal.dto.product.{CategoryDto, CategoryDtoModify}
@@ -11,7 +9,6 @@ import com.portal.effects.GenUUID
 import com.portal.repository.CategoryRepository
 import com.portal.service.CategoryService
 import com.portal.util.ModelMapper.CategoryDomainToDto
-import com.portal.validation.ProductValidationError
 
 import java.util.UUID
 

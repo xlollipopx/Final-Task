@@ -2,17 +2,9 @@ package com.portal.service.impl
 
 import cats.Monad
 import cats.data.EitherT
-import cats.implicits._
 import cats.effect.Sync
-import com.portal.domain.product
-import com.portal.domain.product.{
-  ProductItem,
-  ProductItemId,
-  ProductItemSearch,
-  ProductItemWithCategories,
-  ProductItemWithCategoriesModify,
-  ProductStatus
-}
+import cats.implicits._
+import com.portal.domain.product._
 import com.portal.dto.product._
 import com.portal.repository.ProductItemRepository
 import com.portal.service.ProductItemService

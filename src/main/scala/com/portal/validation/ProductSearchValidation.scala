@@ -1,12 +1,12 @@
 package com.portal.validation
 
-import com.portal.domain.category.CategoryId
-import com.portal.domain.product.{CostInterval, DateInterval, ProductItemSearch, ProductStatus}
+import com.portal.domain.product.{DateInterval, ProductItemSearch, ProductStatus}
 import com.portal.dto.product.{DateIntervalDto, ProductItemSearchDto}
 import com.portal.validation.ProductValidationError.InvalidDateFormat
 
 import java.time.LocalDate
 import java.util.UUID
+import scala.util.Try
 
 object ProductSearchValidation {
   val productValidator = new ProductItemValidator
@@ -22,7 +22,7 @@ object ProductSearchValidation {
     date match {
       case Some(x) =>
         Either.cond(
-          LocalDate.parse(x.min).isInstanceOf[LocalDate] && LocalDate.parse(x.max).isInstanceOf[LocalDate],
+          Try(LocalDate.parse(x.min)).isSuccess && Try(LocalDate.parse(x.max)).isSuccess,
           Some(DateInterval(LocalDate.parse(x.min), LocalDate.parse(x.max))),
           InvalidDateFormat
         )

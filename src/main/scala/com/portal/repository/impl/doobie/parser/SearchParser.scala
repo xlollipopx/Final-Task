@@ -1,6 +1,5 @@
 package com.portal.repository.impl.doobie.parser
-import doobie.{ConnectionIO, Fragment, Transactor}
-import doobie.implicits._
+
 import com.portal.domain.product.{CostInterval, DateInterval, ProductItemSearch, ProductStatus}
 
 object SearchParser {
@@ -34,7 +33,7 @@ object SearchParser {
   }
 
   def makeQuery[A](column: String, min: A, max: A): String = {
-    s"$column BETWEEN $min AND $max"
+    s"$column BETWEEN '$min' AND '$max'"
   }
 
 }

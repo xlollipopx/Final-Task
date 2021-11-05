@@ -1,18 +1,8 @@
 package com.portal.service
 
 import cats.effect.Sync
-import com.portal.domain.product.{
-  ProductItemSearch,
-  ProductItemWithCategories,
-  ProductItemWithCategoriesModify,
-  ProductStatus
-}
-import com.portal.dto.product.{
-  ProductItemSearchDto,
-  ProductItemWithCategoriesDto,
-  ProductItemWithCategoriesDtoModify,
-  ProductItemWithIdCategoriesDto
-}
+import com.portal.domain.product.ProductStatus
+import com.portal.dto.product._
 import com.portal.repository.ProductItemRepository
 import com.portal.service.impl.ProductItemServiceImpl
 import com.portal.validation.{ProductItemValidator, ProductValidationError}

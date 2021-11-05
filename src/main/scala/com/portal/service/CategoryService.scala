@@ -1,7 +1,6 @@
 package com.portal.service
 
 import cats.effect.Sync
-import com.portal.domain.category.Category
 import com.portal.dto.product.{CategoryDto, CategoryDtoModify}
 import com.portal.repository.CategoryRepository
 import com.portal.service.impl.CategoryServiceImpl
