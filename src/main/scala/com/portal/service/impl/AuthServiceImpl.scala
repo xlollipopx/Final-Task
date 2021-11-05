@@ -101,19 +101,4 @@ class AuthServiceImpl[F[_]: Sync: Monad](
     _ <- redis.setEx(user.name.value, t.value, TokenExpiration)
   } yield t
 
-//  override def getUserIdByToken(token: JwtToken): F[UserId] = {
-//    import io.circe.generic.codec.DerivedAsObjectCodec.deriveCodec
-//    val user = redis
-//      .get(token.value)
-//      .map {
-//        _.flatMap { u =>
-//          decode[User](u).toOption
-//        }
-//      }
-//    val res = for {
-//      optionU <- user
-//      id      <- optionU.get.id.pure[F]
-//    } yield id
-//    res
-//  }
 }

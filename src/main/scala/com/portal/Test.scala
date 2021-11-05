@@ -41,7 +41,7 @@ object TestClient extends IOApp {
         for {
           logger <- Slf4jLogger.create[IO]
           clientToken <- {
-            val req = POST(UserWithPasswordDto("Tiz", "anton.stelmax@bk.ru", "qwerty1234").asJson, createClientUri)
+            val req = POST(UserWithPasswordDto("Tip", "anton.stelmax@bk.ru", "qwerty1234").asJson, createClientUri)
             client.expect(req)(jsonOf[IO, JwtToken])
           }
           _ <- logger.info(clientToken.value)

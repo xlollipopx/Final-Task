@@ -11,6 +11,7 @@ import com.portal.service.ProductItemService
 import com.portal.util.ModelMapper._
 import com.portal.validation.ProductSearchValidation.validateProductItemSearch
 import com.portal.validation.{ProductItemValidator, ProductValidationError}
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 import java.util.UUID
 
@@ -31,8 +32,9 @@ class ProductItemServiceImpl[F[_]: Sync: Monad](
     item: ProductItemWithCategoriesDtoModify
   ): F[Either[ProductValidationError, ProductItemWithCategoriesDtoModify]] = {
     val result: EitherT[F, ProductValidationError, ProductItemWithCategoriesDtoModify] = for {
-
       x                                                            <- EitherT(validator.validateProductModify(item).pure[F])
+      logger                                                       <- EitherT.liftF(Slf4jLogger.create[F])
+      _                                                            <- EitherT.liftF(logger.info("Creating product item..."))
       (name, description, cost, date, status, supplier, categories) = x
       productItem =
         ProductItem(ProductItemId(UUID.randomUUID()), name, description, cost, date, status, supplier)
@@ -48,9 +50,12 @@ class ProductItemServiceImpl[F[_]: Sync: Monad](
     id:   UUID,
     item: ProductItemWithCategoriesDtoModify
   ): F[Either[ProductValidationError, ProductItemWithCategoriesDtoModify]] = {
+
     val result: EitherT[F, ProductValidationError, ProductItemWithCategoriesDtoModify] = for {
 
       x                                                            <- EitherT(validator.validateProductModify(item).pure[F])
+      logger                                                       <- EitherT.liftF(Slf4jLogger.create[F])
+      _                                                            <- EitherT.liftF(logger.info("Updating product item..."))
       (name, description, cost, date, status, supplier, categories) = x
       productItem =
         ProductItem(ProductItemId(id), name, description, cost, date, status, supplier)
@@ -63,8 +68,10 @@ class ProductItemServiceImpl[F[_]: Sync: Monad](
   }
 
   override def delete(id: UUID): F[Boolean] = for {
-    cnt <- (productItemRepository.delete(id))
-    res  = if (cnt == 1) true else false
+    cnt    <- (productItemRepository.delete(id))
+    logger <- Slf4jLogger.create[F]
+    _      <- logger.info("Deleting product item...")
+    res     = if (cnt == 1) true else false
   } yield res
 
   override def setStatus(
